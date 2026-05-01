@@ -6,6 +6,8 @@ const schema = z.object({
   PORT: z.coerce.number().int().positive().default(3000),
   DATABASE_URL: z.string().min(1),
   CLIENT_ORIGIN: z.string().url().default('http://localhost:5173'),
+  JWT_SECRET: z.string().min(32, 'JWT_SECRET deve ter no mínimo 32 caracteres'),
+  JWT_EXPIRES_IN: z.string().default('7d'),
 });
 
 const parsed = schema.safeParse(process.env);

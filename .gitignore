@@ -37,7 +37,11 @@ coverage/
 Thumbs.db
 
 # Prisma
+server/prisma/dev.db*
 server/prisma/migrations/dev.db*
+
+# Claude Code local settings
+.claude/settings.local.json
 
 # Vite
 .vite/
