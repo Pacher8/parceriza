@@ -95,6 +95,9 @@ export type JobTipo = (typeof JobTipo)[number];
 export const LeadStatus = ['ABERTO', 'EM_NEGOCIACAO', 'FECHADO', 'CANCELADO'] as const;
 export type LeadStatus = (typeof LeadStatus)[number];
 
+export const SecretariaModulo = ['AGENDA', 'FINANCEIRO', 'CONTROLADORIA'] as const;
+export type SecretariaModulo = (typeof SecretariaModulo)[number];
+
 export const CanalConversa = ['TESTE', 'WHATSAPP', 'WEB'] as const;
 export type CanalConversa = (typeof CanalConversa)[number];
 

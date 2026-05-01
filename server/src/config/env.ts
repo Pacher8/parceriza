@@ -9,6 +9,11 @@ const schema = z.object({
   JWT_SECRET: z.string().min(32, 'JWT_SECRET deve ter no mínimo 32 caracteres'),
   JWT_EXPIRES_IN: z.string().default('7d'),
   ANTHROPIC_API_KEY: z.string().min(1, 'ANTHROPIC_API_KEY é obrigatória'),
+  GOOGLE_CLIENT_ID: z.string().optional(),
+  GOOGLE_CLIENT_SECRET: z.string().optional(),
+  GOOGLE_REDIRECT_URI: z.string().optional().default('http://localhost:3000/api/secretaria/agenda/callback'),
+  ASAAS_API_KEY: z.string().optional(),
+  ASAAS_BASE_URL: z.string().optional().default('https://sandbox.asaas.com/api/v3'),
 });
 
 const parsed = schema.safeParse(process.env);

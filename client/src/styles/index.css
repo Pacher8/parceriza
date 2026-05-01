@@ -335,6 +335,133 @@ a { color: inherit; }
 }
 .login-card h2 { margin: 0 0 1.25rem; font-size: 1.2rem; }
 
+/* ── Secretaria ──────────────────────────────────────────────── */
+.secretaria-layout {
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: 1.25rem;
+  align-items: start;
+}
+.secretaria-panel {
+  background: #fff;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+.secretaria-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--color-gray-100);
+  background: var(--color-gray-50);
+}
+.secretaria-panel-header h3 { margin: 0; font-size: .9rem; font-weight: 600; color: var(--color-gray-700); }
+.secretaria-panel-body { padding: 1.25rem; }
+
+/* Week calendar */
+.week-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: .4rem;
+}
+.week-col { display: flex; flex-direction: column; gap: .3rem; }
+.week-col-header {
+  text-align: center;
+  font-size: .72rem;
+  font-weight: 700;
+  color: var(--color-gray-500);
+  text-transform: uppercase;
+  padding: .3rem 0;
+  border-radius: var(--radius);
+}
+.week-col-header.today { background: var(--color-primary-light); color: var(--color-primary); }
+.week-event {
+  background: var(--color-primary);
+  color: #fff;
+  border-radius: .3rem;
+  padding: .25rem .4rem;
+  font-size: .7rem;
+  line-height: 1.3;
+  overflow: hidden;
+}
+.week-slot {
+  background: #f0fdf4;
+  border: 1px dashed #86efac;
+  border-radius: .3rem;
+  padding: .2rem .4rem;
+  font-size: .68rem;
+  color: #166534;
+  text-align: center;
+}
+.week-empty { font-size: .72rem; color: var(--color-gray-300); text-align: center; padding: .5rem 0; }
+
+/* Charges table */
+.charges-table { width: 100%; border-collapse: collapse; font-size: .82rem; }
+.charges-table th {
+  padding: .5rem .75rem;
+  text-align: left;
+  font-size: .72rem;
+  font-weight: 700;
+  color: var(--color-gray-500);
+  text-transform: uppercase;
+  border-bottom: 2px solid var(--color-gray-100);
+}
+.charges-table td { padding: .6rem .75rem; border-bottom: 1px solid var(--color-gray-100); vertical-align: middle; }
+.charges-table tr:last-child td { border-bottom: none; }
+.badge-pago { background: #dcfce7; color: #166534; }
+.badge-pendente { background: #fef9c3; color: #854d0e; }
+.badge-vencido { background: #fee2e2; color: #991b1b; }
+.badge-cancelado { background: var(--color-gray-100); color: var(--color-gray-500); }
+
+/* Document checklist */
+.doc-item {
+  display: flex;
+  align-items: flex-start;
+  gap: .75rem;
+  padding: .65rem 0;
+  border-bottom: 1px solid var(--color-gray-100);
+}
+.doc-item:last-child { border-bottom: none; }
+.doc-status-icon { font-size: 1.1rem; flex-shrink: 0; margin-top: .05rem; }
+.doc-info { flex: 1; }
+.doc-nome { font-size: .875rem; font-weight: 500; color: var(--color-gray-900); }
+.doc-meta { font-size: .75rem; color: var(--color-gray-400); margin-top: .1rem; }
+
+/* Checklist result */
+.checklist-result {
+  background: var(--color-gray-50);
+  border: 1px solid var(--color-gray-200);
+  border-radius: var(--radius);
+  padding: 1rem;
+  margin-top: 1rem;
+}
+.checklist-item {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  padding: .35rem 0;
+  font-size: .85rem;
+  border-bottom: 1px solid var(--color-gray-100);
+}
+.checklist-item:last-child { border-bottom: none; }
+.checklist-obrigatorio { color: crimson; font-size: .72rem; font-weight: 600; }
+
+/* Connect button */
+.connect-banner {
+  background: var(--color-primary-light);
+  border: 1px solid #bfdbfe;
+  border-radius: var(--radius);
+  padding: 1.25rem;
+  text-align: center;
+  margin-bottom: 1rem;
+}
+.connect-banner p { margin: 0 0 .75rem; font-size: .875rem; color: var(--color-primary); }
+
+@media (max-width: 900px) {
+  .secretaria-layout { grid-template-columns: 1fr; }
+}
+
 @media (max-width: 640px) {
   .job-grid { grid-template-columns: 1fr; }
   .filter-bar { flex-direction: column; align-items: stretch; }

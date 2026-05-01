@@ -70,11 +70,12 @@ model Advogado {
   agentesCriados   AgenteEspecialista[]
   avaliacoesAgente AvaliacaoAgente[]
 
-  jobsSugeridos   JobCatalogo[] @relation("JobSugerido")
-  ofertas         JobOferta[]
-  leadsCapturados Lead[]        @relation("LeadCaptor")
-  leadsMatch      Lead[]        @relation("LeadMatch")
-  conversasAgente ConversaAgente[]
+  jobsSugeridos        JobCatalogo[]        @relation("JobSugerido")
+  ofertas              JobOferta[]
+  leadsCapturados      Lead[]               @relation("LeadCaptor")
+  leadsMatch           Lead[]               @relation("LeadMatch")
+  conversasAgente      ConversaAgente[]
+  conversasSecretaria  SecretariaConversa[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -430,6 +431,41 @@ model AvaliacaoAgente {
   @@unique([agenteId, autorId])
   @@index([agenteId])
   @@map("avaliacoes_agente")
+}
+
+model SecretariaConversa {
+  id          String  @id @default(cuid())
+  // modulo: AGENDA | FINANCEIRO | CONTROLADORIA
+  modulo      String
+  clienteNome String?
+  ativo       Boolean @default(true)
+
+  advogadoId String
+  advogado   Advogado @relation(fields: [advogadoId], references: [id], onDelete: Cascade)
+
+  mensagens SecretariaMensagem[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([advogadoId, modulo])
+  @@map("secretaria_conversas")
+}
+
+model SecretariaMensagem {
+  id           String @id @default(cuid())
+  // papel: USER | ASSISTANT
+  papel        String
+  conteudo     String
+  tokensUsados Int?
+
+  conversaId String
+  conversa   SecretariaConversa @relation(fields: [conversaId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@index([conversaId, createdAt])
+  @@map("secretaria_mensagens")
 }
 
 model ConversaAgente {

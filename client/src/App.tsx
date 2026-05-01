@@ -3,6 +3,7 @@ import { Home } from './pages/Home';
 import { Jobs } from './pages/Jobs';
 import { JobDetail } from './pages/JobDetail';
 import { Agente } from './pages/Agente';
+import { Secretaria } from './pages/Secretaria';
 import { NotFound } from './pages/NotFound';
 
 export function App() {
@@ -12,6 +13,7 @@ export function App() {
       <Route path="/jobs" element={<Jobs />} />
       <Route path="/jobs/:id" element={<JobDetail />} />
       <Route path="/agente" element={<Agente />} />
+      <Route path="/secretaria" element={<Secretaria />} />
       <Route path="*" element={<NotFound />} />
     </Routes>
   );

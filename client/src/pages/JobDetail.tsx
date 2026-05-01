@@ -71,6 +71,8 @@ export function JobDetail() {
       <nav className="nav">
         <Link to="/" className="nav-brand">Parceriza</Link>
         <Link to="/jobs" className="nav-link">Marketplace</Link>
+        <Link to="/agente" className="nav-link">Meu Agente</Link>
+        <Link to="/secretaria" className="nav-link">Secretaria</Link>
       </nav>
       <div className="container"><div className="loading">Carregando…</div></div>
     </>
@@ -81,6 +83,8 @@ export function JobDetail() {
       <nav className="nav">
         <Link to="/" className="nav-brand">Parceriza</Link>
         <Link to="/jobs" className="nav-link">Marketplace</Link>
+        <Link to="/agente" className="nav-link">Meu Agente</Link>
+        <Link to="/secretaria" className="nav-link">Secretaria</Link>
       </nav>
       <div className="container">
         <Link to="/jobs" className="back-link">← Voltar ao marketplace</Link>
@@ -94,6 +98,8 @@ export function JobDetail() {
       <nav className="nav">
         <Link to="/" className="nav-brand">Parceriza</Link>
         <Link to="/jobs" className="nav-link">Marketplace</Link>
+        <Link to="/agente" className="nav-link">Meu Agente</Link>
+        <Link to="/secretaria" className="nav-link">Secretaria</Link>
       </nav>
 
       <div className="container">
