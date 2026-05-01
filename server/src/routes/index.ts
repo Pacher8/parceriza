@@ -8,6 +8,8 @@ import { leadRouter } from './lead.routes.js';
 import { agenteRouter } from './agente.routes.js';
 import { secretariaRouter } from './secretaria.routes.js';
 import { juridicoRouter } from './juridico.routes.js';
+import { tokensRouter } from './tokens.routes.js';
+import { gamificacaoRouter } from './gamificacao.routes.js';
 
 export const router = Router();
 
@@ -20,3 +22,5 @@ router.use('/leads', leadRouter);
 router.use('/agente', agenteRouter);
 router.use('/secretaria', secretariaRouter);
 router.use('/juridico', juridicoRouter);
+router.use('/tokens', tokensRouter);
+router.use('/gamificacao', gamificacaoRouter);

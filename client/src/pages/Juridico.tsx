@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { NavBar } from '../components/NavBar';
 
 // ── Auth helpers ──────────────────────────────────────────────────────────────
 
@@ -85,7 +85,7 @@ function LoginForm({ onLogin }: { onLogin: () => void }) {
 
   return (
     <>
-      <Nav />
+      <NavBar />
       <div className="login-card">
         <h2>Entrar na conta</h2>
         {error && <div className="error-msg">{error}</div>}
@@ -99,20 +99,6 @@ function LoginForm({ onLogin }: { onLogin: () => void }) {
   );
 }
 
-// ── Nav ───────────────────────────────────────────────────────────────────────
-
-function Nav({ onLogout }: { onLogout?: () => void }) {
-  return (
-    <nav className="nav">
-      <Link to="/" className="nav-brand">Parceriza</Link>
-      <Link to="/jobs" className="nav-link">Marketplace</Link>
-      <Link to="/agente" className="nav-link">Meu Agente</Link>
-      <Link to="/secretaria" className="nav-link">Secretaria</Link>
-      <Link to="/juridico" className="nav-link">Jurídico</Link>
-      {onLogout && <button onClick={onLogout} className="btn btn-ghost btn-sm" style={{ marginLeft: 'auto' }} type="button">Sair</button>}
-    </nav>
-  );
-}
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -667,7 +653,7 @@ export function Juridico() {
 
   return (
     <>
-      <Nav onLogout={handleLogout} />
+      <NavBar onLogout={handleLogout} />
       <div className="container">
         <div className="page-header">
           <h1>Retaguarda Jurídica</h1>

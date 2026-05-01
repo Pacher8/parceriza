@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { NavBar } from '../components/NavBar';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -89,13 +89,7 @@ function LoginForm({ onLogin }: { onLogin: () => void }) {
 
   return (
     <>
-      <nav className="nav">
-        <Link to="/" className="nav-brand">Parceriza</Link>
-        <Link to="/jobs" className="nav-link">Marketplace</Link>
-        <Link to="/agente" className="nav-link">Meu Agente</Link>
-        <Link to="/secretaria" className="nav-link">Secretaria</Link>
-        <Link to="/juridico" className="nav-link">Jurídico</Link>
-      </nav>
+      <NavBar />
       <div className="login-card">
         <h2>Entrar na conta</h2>
         {error && <div className="error-msg">{error}</div>}
@@ -467,21 +461,7 @@ export function Agente() {
 
   return (
     <>
-      <nav className="nav">
-        <Link to="/" className="nav-brand">Parceriza</Link>
-        <Link to="/jobs" className="nav-link">Marketplace</Link>
-        <Link to="/agente" className="nav-link">Meu Agente</Link>
-        <Link to="/secretaria" className="nav-link">Secretaria</Link>
-        <Link to="/juridico" className="nav-link">Jurídico</Link>
-        <button
-          onClick={handleLogout}
-          className="btn btn-ghost btn-sm"
-          style={{ marginLeft: 'auto' }}
-          type="button"
-        >
-          Sair
-        </button>
-      </nav>
+      <NavBar onLogout={handleLogout} />
 
       <div className="container" style={{ maxWidth: 760 }}>
         <div className="page-header">

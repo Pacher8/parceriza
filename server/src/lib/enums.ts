@@ -95,6 +95,26 @@ export type JobTipo = (typeof JobTipo)[number];
 export const LeadStatus = ['ABERTO', 'EM_NEGOCIACAO', 'FECHADO', 'CANCELADO'] as const;
 export type LeadStatus = (typeof LeadStatus)[number];
 
+export const TarefaTipo = ['ONBOARDING', 'SEMANAL', 'MENSAL', 'ESPECIAL'] as const;
+export type TarefaTipo = (typeof TarefaTipo)[number];
+
+export const TarefaCategoria = ['PERFIL', 'JOB', 'PARCERIA', 'SOCIAL', 'FINANCEIRO'] as const;
+export type TarefaCategoria = (typeof TarefaCategoria)[number];
+
+export const TarefaRepeticao = ['UNICA', 'SEMANAL', 'MENSAL'] as const;
+export type TarefaRepeticao = (typeof TarefaRepeticao)[number];
+
+export const IndicacaoStatus = ['PENDENTE', 'APROVADA', 'CANCELADA'] as const;
+export type IndicacaoStatus = (typeof IndicacaoStatus)[number];
+
+export const SaqueStatus = ['SOLICITADO', 'PROCESSANDO', 'PAGO', 'CANCELADO'] as const;
+export type SaqueStatus = (typeof SaqueStatus)[number];
+
+export const RegraTipoParceiro = [
+  'VISITA_SITE', 'USO_SERVICO', 'PUBLICIDADE', 'COMPRA', 'CADASTRO', 'CUSTOM',
+] as const;
+export type RegraTipoParceiro = (typeof RegraTipoParceiro)[number];
+
 export const SecretariaModulo = ['AGENDA', 'FINANCEIRO', 'CONTROLADORIA'] as const;
 export type SecretariaModulo = (typeof SecretariaModulo)[number];
 

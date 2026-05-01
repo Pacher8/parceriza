@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
+import { NavBar } from '../components/NavBar';
 
 type Oferta = {
   id: string;
@@ -68,26 +69,14 @@ export function JobDetail() {
 
   if (loading) return (
     <>
-      <nav className="nav">
-        <Link to="/" className="nav-brand">Parceriza</Link>
-        <Link to="/jobs" className="nav-link">Marketplace</Link>
-        <Link to="/agente" className="nav-link">Meu Agente</Link>
-        <Link to="/secretaria" className="nav-link">Secretaria</Link>
-        <Link to="/juridico" className="nav-link">Jurídico</Link>
-      </nav>
+      <NavBar />
       <div className="container"><div className="loading">Carregando…</div></div>
     </>
   );
 
   if (error || !job) return (
     <>
-      <nav className="nav">
-        <Link to="/" className="nav-brand">Parceriza</Link>
-        <Link to="/jobs" className="nav-link">Marketplace</Link>
-        <Link to="/agente" className="nav-link">Meu Agente</Link>
-        <Link to="/secretaria" className="nav-link">Secretaria</Link>
-        <Link to="/juridico" className="nav-link">Jurídico</Link>
-      </nav>
+      <NavBar />
       <div className="container">
         <Link to="/jobs" className="back-link">← Voltar ao marketplace</Link>
         <div className="error-msg">{error ?? 'JOB não encontrado.'}</div>
@@ -97,13 +86,7 @@ export function JobDetail() {
 
   return (
     <>
-      <nav className="nav">
-        <Link to="/" className="nav-brand">Parceriza</Link>
-        <Link to="/jobs" className="nav-link">Marketplace</Link>
-        <Link to="/agente" className="nav-link">Meu Agente</Link>
-        <Link to="/secretaria" className="nav-link">Secretaria</Link>
-        <Link to="/juridico" className="nav-link">Jurídico</Link>
-      </nav>
+      <NavBar />
 
       <div className="container">
         <Link to="/jobs" className="back-link">← Voltar ao marketplace</Link>

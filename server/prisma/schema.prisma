@@ -75,7 +75,12 @@ model Advogado {
   leadsCapturados      Lead[]               @relation("LeadCaptor")
   leadsMatch           Lead[]               @relation("LeadMatch")
   conversasAgente      ConversaAgente[]
-  conversasSecretaria  SecretariaConversa[]
+  conversasSecretaria   SecretariaConversa[]
+  tarefasCompletadas    AdvogadoTarefa[]
+  indicacoesFeitas      IndicacaoToken[]        @relation("IndicacaoIndicador")
+  indicacoesRecebidas   IndicacaoToken[]        @relation("IndicacaoIndicado")
+  saques                SaqueToken[]
+  historicoParceiros    HistoricoTokenParceiro[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -431,6 +436,153 @@ model AvaliacaoAgente {
   @@unique([agenteId, autorId])
   @@index([agenteId])
   @@map("avaliacoes_agente")
+}
+
+model TarefaToken {
+  id               String  @id @default(cuid())
+  titulo           String
+  descricao        String?
+  // tipo: ONBOARDING | SEMANAL | MENSAL | ESPECIAL
+  tipo             String
+  // categoria: PERFIL | JOB | PARCERIA | SOCIAL | FINANCEIRO
+  categoria        String
+  recompensaTokens Int
+  icone            String  @default("🎯")
+  condicao         String?
+  ativo            Boolean @default(true)
+  // repeticao: UNICA | SEMANAL | MENSAL
+  repeticao        String  @default("UNICA")
+
+  completadas AdvogadoTarefa[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([tipo, ativo])
+  @@index([categoria])
+  @@map("tarefas_token")
+}
+
+model AdvogadoTarefa {
+  id           String   @id @default(cuid())
+  completadaEm DateTime @default(now())
+  tokensGanhos Int
+
+  advogadoId String
+  advogado   Advogado @relation(fields: [advogadoId], references: [id], onDelete: Cascade)
+
+  tarefaId String
+  tarefa   TarefaToken @relation(fields: [tarefaId], references: [id])
+
+  createdAt DateTime @default(now())
+
+  @@unique([advogadoId, tarefaId])
+  @@index([advogadoId, completadaEm])
+  @@map("advogado_tarefas")
+}
+
+model IndicacaoToken {
+  id              String  @id @default(cuid())
+  // status: PENDENTE | APROVADA | CANCELADA
+  status          String  @default("PENDENTE")
+  tokensCreditos  Int?
+  codigoIndicacao String  @unique
+
+  indicadorId String
+  indicador   Advogado @relation("IndicacaoIndicador", fields: [indicadorId], references: [id])
+
+  indicadoId String?
+  indicado   Advogado? @relation("IndicacaoIndicado", fields: [indicadoId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([indicadorId])
+  @@map("indicacoes_token")
+}
+
+model SaqueToken {
+  id               String  @id @default(cuid())
+  quantidadeTokens Int
+  valorReais       Decimal
+  // status: SOLICITADO | PROCESSANDO | PAGO | CANCELADO
+  status           String  @default("SOLICITADO")
+  pixChave         String
+  asaasTransferId  String?
+
+  advogadoId String
+  advogado   Advogado @relation(fields: [advogadoId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([advogadoId, status])
+  @@map("saques_token")
+}
+
+model TokenParceiro {
+  id        String  @id @default(cuid())
+  nome      String
+  descricao String?
+  logoUrl   String?
+  ativo     Boolean @default(true)
+  slug      String  @unique
+  chaveApi  String  @unique
+
+  regras    RegraTokenParceiro[]
+  historico HistoricoTokenParceiro[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("token_parceiros")
+}
+
+model RegraTokenParceiro {
+  id                    String    @id @default(cuid())
+  // tipo: VISITA_SITE | USO_SERVICO | PUBLICIDADE | COMPRA | CADASTRO | CUSTOM
+  tipo                  String
+  titulo                String
+  descricao             String?
+  tokensRecompensa      Int
+  limiteUsosPorAdvogado Int?
+  limiteUsosTotal       Int?
+  totalUsado            Int       @default(0)
+  ativo                 Boolean   @default(true)
+  validoAte             DateTime?
+  condicaoJson          String?
+
+  parceiroId String
+  parceiro   TokenParceiro @relation(fields: [parceiroId], references: [id], onDelete: Cascade)
+
+  historico HistoricoTokenParceiro[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([parceiroId, ativo])
+  @@map("regras_token_parceiro")
+}
+
+model HistoricoTokenParceiro {
+  id              String  @id @default(cuid())
+  tokensCreditos  Int
+  comprovanteJson String?
+
+  advogadoId String
+  advogado   Advogado @relation(fields: [advogadoId], references: [id], onDelete: Cascade)
+
+  regraId String
+  regra   RegraTokenParceiro @relation(fields: [regraId], references: [id])
+
+  parceiroId String
+  parceiro   TokenParceiro @relation(fields: [parceiroId], references: [id])
+
+  createdAt DateTime @default(now())
+
+  @@index([advogadoId, createdAt])
+  @@index([parceiroId])
+  @@map("historico_token_parceiro")
 }
 
 model PacoteConsulta {

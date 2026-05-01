@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { NavBar } from '../components/NavBar';
 
 type Area = { nome: string; slug: string };
 
@@ -59,13 +59,7 @@ export function Jobs() {
 
   return (
     <>
-      <nav className="nav">
-        <Link to="/" className="nav-brand">Parceriza</Link>
-        <Link to="/jobs" className="nav-link">Marketplace</Link>
-        <Link to="/agente" className="nav-link">Meu Agente</Link>
-        <Link to="/secretaria" className="nav-link">Secretaria</Link>
-        <Link to="/juridico" className="nav-link">Jurídico</Link>
-      </nav>
+      <NavBar />
 
       <div className="container">
         <div className="page-header">

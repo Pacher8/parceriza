@@ -5,6 +5,9 @@ import { JobDetail } from './pages/JobDetail';
 import { Agente } from './pages/Agente';
 import { Secretaria } from './pages/Secretaria';
 import { Juridico } from './pages/Juridico';
+import { Tokens } from './pages/Tokens';
+import { Conquistas } from './pages/Conquistas';
+import { Apresentacao } from './pages/Apresentacao';
 import { NotFound } from './pages/NotFound';
 
 export function App() {
@@ -16,6 +19,9 @@ export function App() {
       <Route path="/agente" element={<Agente />} />
       <Route path="/secretaria" element={<Secretaria />} />
       <Route path="/juridico" element={<Juridico />} />
+      <Route path="/tokens" element={<Tokens />} />
+      <Route path="/conquistas" element={<Conquistas />} />
+      <Route path="/perfil/apresentacao" element={<Apresentacao />} />
       <Route path="*" element={<NotFound />} />
     </Routes>
   );
