@@ -73,6 +73,7 @@ export function JobDetail() {
         <Link to="/jobs" className="nav-link">Marketplace</Link>
         <Link to="/agente" className="nav-link">Meu Agente</Link>
         <Link to="/secretaria" className="nav-link">Secretaria</Link>
+        <Link to="/juridico" className="nav-link">Jurídico</Link>
       </nav>
       <div className="container"><div className="loading">Carregando…</div></div>
     </>
@@ -85,6 +86,7 @@ export function JobDetail() {
         <Link to="/jobs" className="nav-link">Marketplace</Link>
         <Link to="/agente" className="nav-link">Meu Agente</Link>
         <Link to="/secretaria" className="nav-link">Secretaria</Link>
+        <Link to="/juridico" className="nav-link">Jurídico</Link>
       </nav>
       <div className="container">
         <Link to="/jobs" className="back-link">← Voltar ao marketplace</Link>
@@ -100,6 +102,7 @@ export function JobDetail() {
         <Link to="/jobs" className="nav-link">Marketplace</Link>
         <Link to="/agente" className="nav-link">Meu Agente</Link>
         <Link to="/secretaria" className="nav-link">Secretaria</Link>
+        <Link to="/juridico" className="nav-link">Jurídico</Link>
       </nav>
 
       <div className="container">

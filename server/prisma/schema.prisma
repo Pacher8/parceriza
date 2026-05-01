@@ -433,6 +433,22 @@ model AvaliacaoAgente {
   @@map("avaliacoes_agente")
 }
 
+model PacoteConsulta {
+  id           String  @id @default(cuid())
+  nome         String
+  descricao    String?
+  consultasMes Int
+  precoTokens  Int
+  // planoMinimo: STARTER | PRO | ESCRITORIO
+  planoMinimo  String
+  ativo        Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("pacotes_consulta")
+}
+
 model SecretariaConversa {
   id          String  @id @default(cuid())
   // modulo: AGENDA | FINANCEIRO | CONTROLADORIA

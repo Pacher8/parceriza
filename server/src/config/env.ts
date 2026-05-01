@@ -14,6 +14,10 @@ const schema = z.object({
   GOOGLE_REDIRECT_URI: z.string().optional().default('http://localhost:3000/api/secretaria/agenda/callback'),
   ASAAS_API_KEY: z.string().optional(),
   ASAAS_BASE_URL: z.string().optional().default('https://sandbox.asaas.com/api/v3'),
+  DATAJUD_API_KEY: z.string().optional().default('cDZwSXNkN3dLdzkwUGJsOA=='),
+  DATAJUD_BASE_URL: z.string().optional().default('https://api-publica.datajud.cnj.jus.br'),
+  JUDIT_API_KEY: z.string().optional(),
+  TRIBUNAL_API_PROVIDER: z.enum(['datajud', 'judit']).optional().default('datajud'),
 });
 
 const parsed = schema.safeParse(process.env);

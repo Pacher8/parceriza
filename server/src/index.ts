@@ -1,8 +1,10 @@
 import { app } from './app.js';
 import { env } from './config/env.js';
+import { startMonitorJob } from './jobs/monitor.job.js';
 
 const server = app.listen(env.PORT, () => {
   console.log(`[server] listening on http://localhost:${env.PORT} (${env.NODE_ENV})`);
+  startMonitorJob();
 });
 
 const shutdown = (signal: string) => {

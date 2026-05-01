@@ -166,6 +166,39 @@ async function main() {
     }
   }
 
+  // Pacotes de Consulta
+  console.log('\nSeeding pacotes de consulta...');
+  const pacotes = [
+    {
+      nome: 'Básico',
+      descricao: 'Ideal para advogados autônomos. 10 consultas/mês incluídas no plano Pro.',
+      consultasMes: 10,
+      precoTokens: 0,
+      planoMinimo: 'PRO',
+    },
+    {
+      nome: 'Avançado',
+      descricao: 'Para escritórios. 50 consultas/mês incluídas no plano Escritório.',
+      consultasMes: 50,
+      precoTokens: 0,
+      planoMinimo: 'ESCRITORIO',
+    },
+    {
+      nome: 'Sob Demanda',
+      descricao: 'Pague apenas o que usar. 1 consulta = 20 tokens.',
+      consultasMes: 0,
+      precoTokens: 20,
+      planoMinimo: 'STARTER',
+    },
+  ];
+  for (const pacote of pacotes) {
+    const existing = await prisma.pacoteConsulta.findFirst({ where: { nome: pacote.nome } });
+    if (!existing) {
+      await prisma.pacoteConsulta.create({ data: pacote });
+    }
+    console.log(`  [${pacote.nome}] ${pacote.consultasMes} consultas/mês, ${pacote.precoTokens} tokens`);
+  }
+
   console.log('\nSeed concluído.');
 }
 

@@ -64,6 +64,7 @@ export function Jobs() {
         <Link to="/jobs" className="nav-link">Marketplace</Link>
         <Link to="/agente" className="nav-link">Meu Agente</Link>
         <Link to="/secretaria" className="nav-link">Secretaria</Link>
+        <Link to="/juridico" className="nav-link">Jurídico</Link>
       </nav>
 
       <div className="container">
