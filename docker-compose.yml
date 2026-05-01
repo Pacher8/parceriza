@@ -1,0 +1,48 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: parceriza-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: parceriza
+      POSTGRES_PASSWORD: parceriza
+      POSTGRES_DB: parceriza
+    ports:
+      - '5432:5432'
+    volumes:
+      - parceriza-db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U parceriza -d parceriza']
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    container_name: parceriza-server
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      DATABASE_URL: postgresql://parceriza:parceriza@db:5432/parceriza?schema=public
+    ports:
+      - '3000:3000'
+
+  client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    container_name: parceriza-client
+    restart: unless-stopped
+    depends_on:
+      - server
+    ports:
+      - '5173:80'
+
+volumes:
+  parceriza-db-data:

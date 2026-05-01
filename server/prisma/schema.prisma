@@ -1,0 +1,427 @@
+// Prisma schema — Parceriza
+// Plataforma jurídica com IA integrada.
+//
+// NOTA: SQLite no Prisma 5.x não suporta enums. Os campos abaixo usam String
+// com defaults documentados. A validação de valores permitidos é feita no
+// layer de aplicação (Zod). Constantes em src/lib/enums.ts.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================================
+// CORE
+// ============================================================
+
+model Plano {
+  id             String   @id @default(cuid())
+  // codigo: STARTER | PRO | ESCRITORIO
+  codigo         String   @unique
+  nome           String
+  preco          Decimal
+  descricao      String?
+  limiteServicos Int?
+  limiteAnuncios Int?
+  bonusTokens    Int      @default(0)
+  ativo          Boolean  @default(true)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  advogados Advogado[]
+
+  @@map("planos")
+}
+
+model Advogado {
+  id          String   @id @default(cuid())
+  email       String   @unique
+  password    String
+  nome        String
+  oab         String
+  oabUf       String
+  telefone    String?
+  bio         String?
+  avatarUrl   String?
+  saldoTokens Int      @default(0)
+  ativo       Boolean  @default(true)
+
+  planoId String?
+  plano   Plano?  @relation(fields: [planoId], references: [id])
+
+  agenteConfig     AgenteConfig?
+  agenteWhatsapp   AgenteWhatsapp?
+  agendaConfig     AgendaConfig?
+  financeiroConfig FinanceiroConfig?
+
+  tesesCriadas     Tese[]               @relation("TeseCriador")
+  servicos         Servico[]
+  parceriasOrigem  Parceria[]           @relation("ParceriaOrigem")
+  parceriasDestino Parceria[]           @relation("ParceriaDestino")
+  avaliacoesFeitas Avaliacao[]
+  transacoes       Transacao[]
+  anuncios         Anuncio[]
+  documentos       Documento[]
+  monitores        ProcessoMonitor[]
+  agentesCriados   AgenteEspecialista[]
+  avaliacoesAgente AvaliacaoAgente[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([oab, oabUf])
+  @@index([oabUf])
+  @@index([nome])
+  @@map("advogados")
+}
+
+model Tese {
+  id String @id @default(cuid())
+  // area: TRABALHISTA | CIVIL | CONSUMIDOR | PREVIDENCIARIO | TRIBUTARIO |
+  //       CRIMINAL | EMPRESARIAL | FAMILIA | IMOBILIARIO | ADMINISTRATIVO |
+  //       CONSTITUCIONAL | AMBIENTAL | DIGITAL | OUTROS
+  area      String
+  titulo    String
+  descricao String?
+
+  criadorId String?
+  criador   Advogado? @relation("TeseCriador", fields: [criadorId], references: [id])
+
+  servicos Servico[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([area])
+  @@index([titulo])
+  @@map("teses")
+}
+
+model Servico {
+  id        String  @id @default(cuid())
+  titulo    String
+  descricao String
+  valor     Decimal
+  ativo     Boolean @default(true)
+
+  advogadoId String
+  advogado   Advogado @relation(fields: [advogadoId], references: [id], onDelete: Cascade)
+
+  teseId String
+  tese   Tese   @relation(fields: [teseId], references: [id])
+
+  parcerias  Parceria[]
+  avaliacoes Avaliacao[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([advogadoId, ativo])
+  @@index([teseId, ativo])
+  @@map("servicos")
+}
+
+model Parceria {
+  id            String   @id @default(cuid())
+  comissaoPct   Float
+  valorAcordado Decimal?
+  observacoes   String?
+  // status: PENDENTE | ACEITA | RECUSADA | ATIVA | FINALIZADA | CANCELADA
+  status        String   @default("PENDENTE")
+
+  advogadoOrigemId String
+  advogadoOrigem   Advogado @relation("ParceriaOrigem", fields: [advogadoOrigemId], references: [id])
+
+  advogadoDestinoId String
+  advogadoDestino   Advogado @relation("ParceriaDestino", fields: [advogadoDestinoId], references: [id])
+
+  servicoId String?
+  servico   Servico? @relation(fields: [servicoId], references: [id])
+
+  aceitaEm     DateTime?
+  finalizadaEm DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([advogadoOrigemId, status])
+  @@index([advogadoDestinoId, status])
+  @@index([status])
+  @@map("parcerias")
+}
+
+model Avaliacao {
+  id         String  @id @default(cuid())
+  nota       Int
+  comentario String?
+
+  servicoId String
+  servico   Servico @relation(fields: [servicoId], references: [id], onDelete: Cascade)
+
+  autorId String
+  autor   Advogado @relation(fields: [autorId], references: [id])
+
+  createdAt DateTime @default(now())
+
+  @@unique([servicoId, autorId])
+  @@index([servicoId])
+  @@map("avaliacoes")
+}
+
+model Transacao {
+  id String @id @default(cuid())
+  // tipo: CREDITO | DEBITO
+  tipo         String
+  // origem: COMPRA | BONUS | PAGAMENTO_SERVICO | COMISSAO_PARCERIA |
+  //         ANUNCIO | REEMBOLSO | AJUSTE
+  origem       String
+  quantidade   Int
+  descricao    String?
+  referenciaId String?
+
+  advogadoId String
+  advogado   Advogado @relation(fields: [advogadoId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@index([advogadoId, createdAt])
+  @@index([origem])
+  @@map("transacoes")
+}
+
+model Anuncio {
+  id        String  @id @default(cuid())
+  titulo    String
+  descricao String
+  mediaUrl  String?
+  // modelo: CPC | CPM
+  modelo         String
+  valorLance     Decimal
+  orcamentoTotal Decimal
+  gastoAcumulado Decimal   @default(0)
+  impressoes     Int       @default(0)
+  cliques        Int       @default(0)
+  // status: RASCUNHO | ATIVO | PAUSADO | ENCERRADO
+  status         String    @default("RASCUNHO")
+  inicioEm       DateTime?
+  fimEm          DateTime?
+
+  advogadoId String
+  advogado   Advogado @relation(fields: [advogadoId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([advogadoId, status])
+  @@index([status, modelo])
+  @@map("anuncios")
+}
+
+// ============================================================
+// IA & WHATSAPP
+// ============================================================
+
+model AgenteConfig {
+  id            String  @id @default(cuid())
+  nome          String  @default("Assistente")
+  personalidade String?
+  tomDeVoz      String?
+  temperatura   Float   @default(0.7)
+  promptSistema String?
+  // modelo: CLAUDE_OPUS | CLAUDE_SONNET | CLAUDE_HAIKU | GPT_4 | GEMINI
+  modelo        String  @default("CLAUDE_SONNET")
+
+  advogadoId String   @unique
+  advogado   Advogado @relation(fields: [advogadoId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("agente_config")
+}
+
+model AgenteWhatsapp {
+  id             String  @id @default(cuid())
+  numeroTelefone String?
+  // statusConexao: DESCONECTADO | AGUARDANDO_QR | CONECTADO | ERRO | EXPIRADO
+  statusConexao   String    @default("DESCONECTADO")
+  sessionData     String?
+  ultimoQrEm      DateTime?
+  ultimaConexaoEm DateTime?
+
+  advogadoId String   @unique
+  advogado   Advogado @relation(fields: [advogadoId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([statusConexao])
+  @@map("agente_whatsapp")
+}
+
+model AgendaConfig {
+  id                  String    @id @default(cuid())
+  googleAccessToken   String?
+  googleRefreshToken  String?
+  googleCalendarId    String?
+  fusoHorario         String    @default("America/Sao_Paulo")
+  // horariosDisponiveis: JSON string. Ex: {"seg":[{"ini":"09:00","fim":"12:00"}],...}
+  horariosDisponiveis String?
+  conectadoEm         DateTime?
+
+  advogadoId String   @unique
+  advogado   Advogado @relation(fields: [advogadoId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("agenda_config")
+}
+
+model FinanceiroConfig {
+  id       String  @id @default(cuid())
+  pixChave String?
+  // contaBancaria: JSON {banco, agencia, conta, tipo}
+  contaBancaria String?
+  // tabelaHonorarios: JSON [{descricao, valor}, ...]
+  tabelaHonorarios String?
+  regrasCobranca   String?
+
+  advogadoId String   @unique
+  advogado   Advogado @relation(fields: [advogadoId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("financeiro_config")
+}
+
+model Documento {
+  id               String @id @default(cuid())
+  nome             String
+  mimetype         String
+  tamanho          Int
+  urlArmazenamento String
+  // origem: WHATSAPP | UPLOAD | EMAIL | API
+  origem    String
+  // status: RECEBIDO | PROCESSANDO | PROCESSADO | ERRO
+  status    String  @default("RECEBIDO")
+  resumoIA  String?
+  // metadados: JSON livre
+  metadados String?
+
+  advogadoId String
+  advogado   Advogado @relation(fields: [advogadoId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([advogadoId, status])
+  @@index([origem])
+  @@map("documentos")
+}
+
+// ============================================================
+// RETAGUARDA JURÍDICA
+// ============================================================
+
+model ProcessoMonitor {
+  id        String @id @default(cuid())
+  documento String
+  // tipoDocumento: CPF | CNPJ
+  tipoDocumento       String
+  nomeMonitorado      String?
+  ativo               Boolean   @default(true)
+  ultimaVerificacaoEm DateTime?
+
+  advogadoId String
+  advogado   Advogado @relation(fields: [advogadoId], references: [id], onDelete: Cascade)
+
+  processos Processo[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([advogadoId, documento])
+  @@index([advogadoId, ativo])
+  @@index([documento])
+  @@map("processo_monitores")
+}
+
+model Processo {
+  id             String  @id @default(cuid())
+  numeroProcesso String
+  tribunal       String?
+  vara           String?
+  classe         String?
+  assunto        String?
+  // status: ATIVO | ARQUIVADO | SUSPENSO | TRANSITADO_JULGADO | DESCONHECIDO
+  status              String    @default("DESCONHECIDO")
+  // partes: JSON [{nome, tipo, papel}, ...]
+  partes              String?
+  // movimentacoes: JSON [{data, titulo, descricao}, ...]
+  movimentacoes       String?
+  resumoIA            String?
+  ultimaAtualizacaoEm DateTime?
+
+  monitorId String
+  monitor   ProcessoMonitor @relation(fields: [monitorId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([monitorId, numeroProcesso])
+  @@index([numeroProcesso])
+  @@index([status])
+  @@map("processos")
+}
+
+model AgenteEspecialista {
+  id            String @id @default(cuid())
+  nome          String
+  descricao     String
+  // area: ver lista em Tese.area
+  area          String
+  promptSistema String
+  // exemplos: JSON [{input, output}, ...]
+  exemplos    String?
+  precoTokens Int     @default(0)
+  publico     Boolean @default(false)
+  aprovado    Boolean @default(false)
+  totalUsos   Int     @default(0)
+
+  criadorId String
+  criador   Advogado @relation(fields: [criadorId], references: [id], onDelete: Cascade)
+
+  avaliacoes AvaliacaoAgente[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([area, publico, aprovado])
+  @@index([criadorId])
+  @@index([nome])
+  @@map("agentes_especialistas")
+}
+
+model AvaliacaoAgente {
+  id         String  @id @default(cuid())
+  nota       Int
+  comentario String?
+
+  agenteId String
+  agente   AgenteEspecialista @relation(fields: [agenteId], references: [id], onDelete: Cascade)
+
+  autorId String
+  autor   Advogado @relation(fields: [autorId], references: [id])
+
+  createdAt DateTime @default(now())
+
+  @@unique([agenteId, autorId])
+  @@index([agenteId])
+  @@map("avaliacoes_agente")
+}
