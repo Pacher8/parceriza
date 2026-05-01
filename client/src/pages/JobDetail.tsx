@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { NavBar } from '../components/NavBar';
 
+type AdFeed = { id: string; titulo: string; descricao: string; mediaUrl: string | null };
+
 type Oferta = {
   id: string;
   descricaoCustom: string | null;
@@ -55,14 +57,20 @@ function formatBRL(val: string | null | undefined) {
 export function JobDetail() {
   const { id } = useParams<{ id: string }>();
   const [job, setJob] = useState<Job | null>(null);
+  const [adDestaque, setAdDestaque] = useState<AdFeed | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!id) return;
-    fetch(`/api/jobs/${id}`)
-      .then((r) => (r.ok ? r.json() : r.json().then((b: { error: string }) => Promise.reject(new Error(b.error)))))
-      .then((data) => setJob(data.job))
+    Promise.all([
+      fetch(`/api/jobs/${id}`).then((r) => (r.ok ? r.json() : r.json().then((b: { error: string }) => Promise.reject(new Error(b.error))))),
+      fetch(`/api/ads/feed?posicionamento=DESTAQUE_JOB&jobId=${id}&limite=1`).then((r) => r.json()).catch(() => ({ anuncios: [] })),
+    ])
+      .then(([jobData, adsData]) => {
+        setJob(jobData.job);
+        setAdDestaque((adsData.anuncios ?? [])[0] ?? null);
+      })
       .catch((e: Error) => setError(e.message))
       .finally(() => setLoading(false));
   }, [id]);
@@ -105,6 +113,15 @@ export function JobDetail() {
         </div>
 
         <div className="detail-card">
+          {adDestaque && (
+            <div className="ad-card-sponsored" style={{ marginBottom: '1rem' }}>
+              <div className="ad-sponsored-badge">Patrocinado</div>
+              {adDestaque.mediaUrl && <img src={adDestaque.mediaUrl} alt={adDestaque.titulo} className="ad-media" />}
+              <div className="ad-card-title">{adDestaque.titulo}</div>
+              <div className="ad-card-desc">{adDestaque.descricao}</div>
+            </div>
+          )}
+
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
             <h2 className="section-title" style={{ margin: 0 }}>
               Advogados habilitados

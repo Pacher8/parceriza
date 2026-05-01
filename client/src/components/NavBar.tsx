@@ -28,6 +28,7 @@ export function NavBar({ onLogout, refreshKey = 0 }: NavBarProps) {
       <Link to="/secretaria" className="nav-link">Secretaria</Link>
       <Link to="/juridico" className="nav-link">Jurídico</Link>
       <Link to="/conquistas" className="nav-link">Conquistas</Link>
+      {token && <Link to="/ads" className="nav-link">Meus Anúncios</Link>}
       <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '.75rem' }}>
         {token && (
           <Link to="/tokens" className="token-badge-nav">

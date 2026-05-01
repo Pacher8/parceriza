@@ -166,6 +166,44 @@ async function main() {
     }
   }
 
+  // Áreas e JOBs — Paralegal e Imobiliário
+  console.log('\nSeeding áreas Paralegal e Imobiliário...');
+  const novasAreas = [
+    { nome: 'Paralegal', slug: 'paralegal', ordem: 9, descricao: 'Serviços de apoio jurídico, diligências e suporte processual.' },
+    { nome: 'Imobiliário', slug: 'imobiliario', ordem: 10, descricao: 'Assessoria jurídica em negócios imobiliários e regularização de imóveis.' },
+  ];
+  for (const area of novasAreas) {
+    const result = await prisma.areaJuridica.upsert({ where: { slug: area.slug }, update: {}, create: area });
+    areaMap[area.slug] = result.id;
+    console.log(`  [${result.slug}] ${result.nome}`);
+  }
+
+  const novosJobs: Record<string, JobSeed[]> = {
+    paralegal: [
+      { titulo: 'Diligências em Cartório', tipo: 'ADMINISTRATIVO', descricao: 'Reconhecimento de firma, autenticação, certidões e registros.' },
+      { titulo: 'Protocolo e Retirada de Documentos', tipo: 'ADMINISTRATIVO', descricao: 'Protocolo e acompanhamento em órgãos públicos e tribunais.' },
+      { titulo: 'Pesquisa Processual Presencial', tipo: 'ADMINISTRATIVO', descricao: 'Consulta física em cartórios e varas judiciais.' },
+      { titulo: 'Apostilamento e Autenticação', tipo: 'ADMINISTRATIVO', descricao: 'Apostila de Haia e autenticação de documentos internacionais.' },
+      { titulo: 'Intimação e Citação Pessoal', tipo: 'JUDICIAL', descricao: 'Cumprimento de mandados de intimação e citação.' },
+    ],
+    imobiliario: [
+      { titulo: 'Due Diligence Imobiliária', tipo: 'ADMINISTRATIVO', descricao: 'Avaliação completa de restrições, ônus e situação jurídica do imóvel.' },
+      { titulo: 'Regularização de Imóvel', tipo: 'ADMINISTRATIVO', descricao: 'Regularização de construções, registros e escrituras.' },
+      { titulo: 'Contrato de Compra e Venda', tipo: 'ADMINISTRATIVO', descricao: 'Elaboração e revisão de contratos imobiliários.' },
+      { titulo: 'Usucapião', tipo: 'JUDICIAL', descricao: 'Ação de usucapião ordinária, extraordinária ou especial.' },
+      { titulo: 'Ação de Despejo', tipo: 'JUDICIAL', descricao: 'Despejo por falta de pagamento ou término de contrato.' },
+    ],
+  };
+  for (const [slug, jobs] of Object.entries(novosJobs)) {
+    const areaId = areaMap[slug];
+    if (!areaId) continue;
+    for (const job of jobs) {
+      const existing = await prisma.jobCatalogo.findFirst({ where: { titulo: job.titulo, areaId } });
+      if (!existing) await prisma.jobCatalogo.create({ data: { ...job, areaId } });
+      console.log(`  [${slug}] ${job.titulo}`);
+    }
+  }
+
   // Tarefas de Tokens (Gamificação)
   console.log('\nSeeding tarefas de tokens...');
   const tarefas = [

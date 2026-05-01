@@ -8,6 +8,7 @@ import { Juridico } from './pages/Juridico';
 import { Tokens } from './pages/Tokens';
 import { Conquistas } from './pages/Conquistas';
 import { Apresentacao } from './pages/Apresentacao';
+import { Ads } from './pages/Ads';
 import { NotFound } from './pages/NotFound';
 
 export function App() {
@@ -22,6 +23,7 @@ export function App() {
       <Route path="/tokens" element={<Tokens />} />
       <Route path="/conquistas" element={<Conquistas />} />
       <Route path="/perfil/apresentacao" element={<Apresentacao />} />
+      <Route path="/ads" element={<Ads />} />
       <Route path="*" element={<NotFound />} />
     </Routes>
   );

@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { NavBar } from '../components/NavBar';
 
+type AdFeed = { id: string; titulo: string; descricao: string; mediaUrl: string | null; posicionamento: string };
 type Area = { nome: string; slug: string };
 
 type Job = {
@@ -27,6 +28,7 @@ const tipoLabel: Record<string, string> = {
 export function Jobs() {
   const [jobs, setJobs] = useState<Job[]>([]);
   const [areas, setAreas] = useState<Area[]>([]);
+  const [adsTop, setAdsTop] = useState<AdFeed[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [view, setView] = useState<'cards' | 'tabela'>('cards');
@@ -38,10 +40,12 @@ export function Jobs() {
     Promise.all([
       fetch('/api/jobs').then((r) => r.json()),
       fetch('/api/areas').then((r) => r.json()),
+      fetch('/api/ads/feed?posicionamento=BANNER_BUSCA&limite=2').then((r) => r.json()).catch(() => ({ anuncios: [] })),
     ])
-      .then(([jobsData, areasData]) => {
+      .then(([jobsData, areasData, adsData]) => {
         setJobs(jobsData.jobs ?? []);
         setAreas(areasData.areas ?? []);
+        setAdsTop(adsData.anuncios ?? []);
       })
       .catch(() => setError('Erro ao carregar os dados.'))
       .finally(() => setLoading(false));
@@ -92,6 +96,20 @@ export function Jobs() {
             <button className={view === 'tabela' ? 'active' : ''} onClick={() => setView('tabela')}>Tabela</button>
           </div>
         </div>
+
+        {/* Anúncios Banner Busca */}
+        {adsTop.length > 0 && (
+          <div style={{ marginBottom: '1rem' }}>
+            {adsTop.map((ad) => (
+              <div key={ad.id} className="ad-card-sponsored">
+                <div className="ad-sponsored-badge">Patrocinado</div>
+                {ad.mediaUrl && <img src={ad.mediaUrl} alt={ad.titulo} className="ad-media" />}
+                <div className="ad-card-title">{ad.titulo}</div>
+                <div className="ad-card-desc">{ad.descricao}</div>
+              </div>
+            ))}
+          </div>
+        )}
 
         {error && <div className="error-msg">{error}</div>}
         {loading && <div className="loading">Carregando JOBs…</div>}

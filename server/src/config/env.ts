@@ -18,6 +18,7 @@ const schema = z.object({
   DATAJUD_BASE_URL: z.string().optional().default('https://api-publica.datajud.cnj.jus.br'),
   JUDIT_API_KEY: z.string().optional(),
   TRIBUNAL_API_PROVIDER: z.enum(['datajud', 'judit']).optional().default('datajud'),
+  ADMIN_SECRET: z.string().min(16).optional().default('parceriza_admin_secret_dev'),
 });
 
 const parsed = schema.safeParse(process.env);

@@ -53,6 +53,9 @@ export type AnuncioModelo = (typeof AnuncioModelo)[number];
 export const AnuncioStatus = ['RASCUNHO', 'ATIVO', 'PAUSADO', 'ENCERRADO'] as const;
 export type AnuncioStatus = (typeof AnuncioStatus)[number];
 
+export const AnuncioPosicionamento = ['DESTAQUE_JOB', 'DESTAQUE_AREA', 'BANNER_BUSCA'] as const;
+export type AnuncioPosicionamento = (typeof AnuncioPosicionamento)[number];
+
 export const ModeloIA = [
   'CLAUDE_OPUS',
   'CLAUDE_SONNET',

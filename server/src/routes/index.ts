@@ -10,6 +10,8 @@ import { secretariaRouter } from './secretaria.routes.js';
 import { juridicoRouter } from './juridico.routes.js';
 import { tokensRouter } from './tokens.routes.js';
 import { gamificacaoRouter } from './gamificacao.routes.js';
+import { adsRouter } from './ads.routes.js';
+import { adminRouter } from './admin.routes.js';
 
 export const router = Router();
 
@@ -24,3 +26,5 @@ router.use('/secretaria', secretariaRouter);
 router.use('/juridico', juridicoRouter);
 router.use('/tokens', tokensRouter);
 router.use('/gamificacao', gamificacaoRouter);
+router.use('/ads', adsRouter);
+router.use('/admin', adminRouter);

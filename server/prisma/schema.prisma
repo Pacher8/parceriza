@@ -212,24 +212,37 @@ model Anuncio {
   mediaUrl  String?
   // modelo: CPC | CPM
   modelo         String
-  valorLance     Decimal
-  orcamentoTotal Decimal
-  gastoAcumulado Decimal   @default(0)
-  impressoes     Int       @default(0)
-  cliques        Int       @default(0)
+  valorLance     Decimal  @default(0)
+  orcamentoTotal Decimal  @default(0)
+  gastoAcumulado Decimal  @default(0)
+  impressoes     Int      @default(0)
+  cliques        Int      @default(0)
   // status: RASCUNHO | ATIVO | PAUSADO | ENCERRADO
-  status         String    @default("RASCUNHO")
+  status         String   @default("RASCUNHO")
   inicioEm       DateTime?
   fimEm          DateTime?
+  // posicionamento: DESTAQUE_JOB | DESTAQUE_AREA | BANNER_BUSCA
+  posicionamento  String  @default("BANNER_BUSCA")
+  tokensLance     Int     @default(0)
+  orcamentoTokens Int     @default(0)
+  gastoTokens     Int     @default(0)
 
   advogadoId String
   advogado   Advogado @relation(fields: [advogadoId], references: [id], onDelete: Cascade)
+
+  jobId String?
+  job   JobCatalogo? @relation(fields: [jobId], references: [id])
+
+  areaId String?
+  area   AreaJuridica? @relation(fields: [areaId], references: [id])
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@index([advogadoId, status])
-  @@index([status, modelo])
+  @@index([status, posicionamento])
+  @@index([jobId])
+  @@index([areaId])
   @@map("anuncios")
 }
 
@@ -686,7 +699,8 @@ model AreaJuridica {
   ativo     Boolean @default(true)
   ordem     Int     @default(0)
 
-  jobs JobCatalogo[]
+  jobs     JobCatalogo[]
+  anuncios Anuncio[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -710,8 +724,9 @@ model JobCatalogo {
   sugeridoPorId String?
   sugeridoPor   Advogado? @relation("JobSugerido", fields: [sugeridoPorId], references: [id])
 
-  ofertas JobOferta[]
-  leads   Lead[]
+  ofertas  JobOferta[]
+  leads    Lead[]
+  anuncios Anuncio[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
