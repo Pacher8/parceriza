@@ -1,7 +1,8 @@
 // Constantes que substituem os enums do Prisma (não suportados em SQLite).
 // Use nos schemas Zod para validar entrada e na lógica de negócio.
 
-export const AreaJuridica = [
+// Valores válidos para o campo Tese.area (renomeado para evitar conflito com o model Prisma AreaJuridica)
+export const TeseArea = [
   'TRABALHISTA',
   'CIVIL',
   'CONSUMIDOR',
@@ -17,7 +18,7 @@ export const AreaJuridica = [
   'DIGITAL',
   'OUTROS',
 ] as const;
-export type AreaJuridica = (typeof AreaJuridica)[number];
+export type TeseArea = (typeof TeseArea)[number];
 
 export const PlanoTipo = ['STARTER', 'PRO', 'ESCRITORIO'] as const;
 export type PlanoTipo = (typeof PlanoTipo)[number];
@@ -87,3 +88,9 @@ export const ProcessoStatus = [
   'DESCONHECIDO',
 ] as const;
 export type ProcessoStatus = (typeof ProcessoStatus)[number];
+
+export const JobTipo = ['JUDICIAL', 'ADMINISTRATIVO', 'AMBOS'] as const;
+export type JobTipo = (typeof JobTipo)[number];
+
+export const LeadStatus = ['ABERTO', 'EM_NEGOCIACAO', 'FECHADO', 'CANCELADO'] as const;
+export type LeadStatus = (typeof LeadStatus)[number];

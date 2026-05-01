@@ -70,6 +70,11 @@ model Advogado {
   agentesCriados   AgenteEspecialista[]
   avaliacoesAgente AvaliacaoAgente[]
 
+  jobsSugeridos   JobCatalogo[] @relation("JobSugerido")
+  ofertas         JobOferta[]
+  leadsCapturados Lead[]        @relation("LeadCaptor")
+  leadsMatch      Lead[]        @relation("LeadMatch")
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -424,4 +429,106 @@ model AvaliacaoAgente {
   @@unique([agenteId, autorId])
   @@index([agenteId])
   @@map("avaliacoes_agente")
+}
+
+// ============================================================
+// MARKETPLACE
+// ============================================================
+
+model AreaJuridica {
+  id        String  @id @default(cuid())
+  nome      String  @unique
+  slug      String  @unique
+  descricao String?
+  icone     String?
+  ativo     Boolean @default(true)
+  ordem     Int     @default(0)
+
+  jobs JobCatalogo[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([ativo, ordem])
+  @@map("areas_juridicas")
+}
+
+model JobCatalogo {
+  id        String  @id @default(cuid())
+  titulo    String
+  descricao String?
+  // tipo: JUDICIAL | ADMINISTRATIVO | AMBOS
+  tipo      String
+  ativo     Boolean @default(true)
+  aprovado  Boolean @default(true)
+
+  areaId String
+  area   AreaJuridica @relation(fields: [areaId], references: [id])
+
+  sugeridoPorId String?
+  sugeridoPor   Advogado? @relation("JobSugerido", fields: [sugeridoPorId], references: [id])
+
+  ofertas JobOferta[]
+  leads   Lead[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([areaId, ativo, aprovado])
+  @@index([tipo])
+  @@map("jobs_catalogo")
+}
+
+model JobOferta {
+  id               String   @id @default(cuid())
+  descricaoCustom  String?
+  valorEstimadoMin Decimal?
+  valorEstimadoMax Decimal?
+  comissaoPct      Float?
+  destaque         Boolean  @default(false)
+  totalLeads       Int      @default(0)
+  totalFechados    Int      @default(0)
+  ativo            Boolean  @default(true)
+
+  advogadoId String
+  advogado   Advogado @relation(fields: [advogadoId], references: [id], onDelete: Cascade)
+
+  jobId String
+  job   JobCatalogo @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([advogadoId, jobId])
+  @@index([jobId, ativo])
+  @@index([advogadoId, ativo])
+  @@map("jobs_ofertas")
+}
+
+model Lead {
+  id               String   @id @default(cuid())
+  descricao        String
+  estadoCliente    String
+  valorEstimado    Decimal?
+  // status: ABERTO | EM_NEGOCIACAO | FECHADO | CANCELADO
+  status           String   @default("ABERTO")
+  comissaoAcordada Float?
+
+  jobId String
+  job   JobCatalogo @relation(fields: [jobId], references: [id])
+
+  advogadoCaptorId String
+  advogadoCaptor   Advogado @relation("LeadCaptor", fields: [advogadoCaptorId], references: [id])
+
+  advogadoMatchId String?
+  advogadoMatch   Advogado? @relation("LeadMatch", fields: [advogadoMatchId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([jobId, status])
+  @@index([advogadoCaptorId])
+  @@index([advogadoMatchId])
+  @@index([status])
+  @@map("leads")
 }
