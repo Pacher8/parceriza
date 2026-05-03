@@ -7,16 +7,25 @@ import type { ConsultarProcessoInput } from '../schemas/juridico.schema.js';
 
 const anthropic = new Anthropic({ apiKey: env.ANTHROPIC_API_KEY });
 
+const TRF_TRIBUNAIS = new Set(['trf1', 'trf2', 'trf3', 'trf4', 'trf5', 'trf6']);
+
 export async function consultarProcesso(advogadoId: string, input: ConsultarProcessoInput) {
   const tribunal = input.tribunal ?? 'tjsc';
   let processos: datajud.DataJudProcesso[] = [];
 
   if (input.numero) {
     processos = await datajud.buscarPorNumero(input.numero, tribunal);
-  } else if (input.cpf) {
-    processos = await datajud.buscarPorDocumento(input.cpf, tribunal);
-  } else if (input.cnpj) {
-    processos = await datajud.buscarPorDocumento(input.cnpj, tribunal);
+    if (processos.length === 0) throw new HttpError(404, 'Nenhum processo encontrado para o número informado');
+  } else if (input.cpf || input.cnpj) {
+    const doc = input.cpf ?? input.cnpj!;
+    // Federal courts may need a different query strategy
+    processos = TRF_TRIBUNAIS.has(tribunal)
+      ? await datajud.buscarPorDocumentoTRF(doc, tribunal)
+      : await datajud.buscarPorDocumento(doc, tribunal);
+
+    if (processos.length === 0) {
+      throw new HttpError(404, `Nenhum processo encontrado para o documento informado no ${tribunal.toUpperCase()}`);
+    }
   }
 
   // Upsert each result into our DB
