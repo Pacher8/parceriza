@@ -3,7 +3,6 @@ import { Home } from './pages/Home';
 import { Jobs } from './pages/Jobs';
 import { JobDetail } from './pages/JobDetail';
 import { Agente } from './pages/Agente';
-import { Secretaria } from './pages/Secretaria';
 import { Juridico } from './pages/Juridico';
 import { Tokens } from './pages/Tokens';
 import { Conquistas } from './pages/Conquistas';
@@ -18,7 +17,6 @@ export function App() {
       <Route path="/jobs" element={<Jobs />} />
       <Route path="/jobs/:id" element={<JobDetail />} />
       <Route path="/agente" element={<Agente />} />
-      <Route path="/secretaria" element={<Secretaria />} />
       <Route path="/juridico" element={<Juridico />} />
       <Route path="/tokens" element={<Tokens />} />
       <Route path="/conquistas" element={<Conquistas />} />

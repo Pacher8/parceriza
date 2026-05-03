@@ -25,7 +25,6 @@ export function NavBar({ onLogout, refreshKey = 0 }: NavBarProps) {
       <Link to="/" className="nav-brand">Parceriza</Link>
       <Link to="/jobs" className="nav-link">Marketplace</Link>
       <Link to="/agente" className="nav-link">Meu Agente</Link>
-      <Link to="/secretaria" className="nav-link">Secretaria</Link>
       <Link to="/juridico" className="nav-link">Jurídico</Link>
       <Link to="/conquistas" className="nav-link">Conquistas</Link>
       {token && <Link to="/ads" className="nav-link">Meus Anúncios</Link>}
