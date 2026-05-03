@@ -36,10 +36,10 @@ export function Home() {
       {/* Hero */}
       <section className="hero-section">
         <div className="hero-tagline">Plataforma Jurídica Digital</div>
-        <h1 className="hero-title">O ecossistema jurídico<br />para advogados modernos</h1>
+        <h1 className="hero-title">A plataforma que irá<br />revolucionar a sua advocacia</h1>
         <p className="hero-sub">
-          Conecte-se com especialistas, automatize seu atendimento com IA,
-          monitore processos em tempo real e expanda sua carteira de clientes.
+          Parcerias inteligentes, IA que trabalha por você e processos monitorados em tempo real.
+          Tudo que um escritório moderno precisa — em um só lugar.
         </p>
         <div className="hero-ctas">
           <Link to="/auth/register" className="btn btn-white" style={{ padding: '.75rem 2rem', fontSize: '1rem' }}>
