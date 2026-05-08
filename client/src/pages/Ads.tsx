@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { NavBar } from '../components/NavBar';
 
 import { getToken, setToken, clearToken, apiFetch } from '../lib/api';
@@ -31,7 +32,7 @@ function LoginForm({ onLogin }: { onLogin: () => void }) {
     try { const d = await apiFetch<{ token: string }>('/api/auth/login', { method: 'POST', body: JSON.stringify({ email, password }) }); setToken(d.token); onLogin(); }
     catch (err) { setError(err instanceof Error ? err.message : 'Erro'); } finally { setLoading(false); }
   }
-  return (<><NavBar /><div className="login-card"><h2>Entrar</h2>{error && <div className="error-msg">{error}</div>}<form onSubmit={submit}><div className="form-group"><label>E-mail</label><input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required autoFocus /></div><div className="form-group"><label>Senha</label><input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required /></div><button type="submit" className="btn btn-primary" style={{ width: '100%' }} disabled={loading}>{loading ? 'Entrando…' : 'Entrar'}</button></form></div></>);
+  return (<><NavBar /><div className="login-card"><h2>Entrar</h2>{error && <div className="error-msg">{error}</div>}<form onSubmit={submit}><div className="form-group"><label>E-mail</label><input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required autoFocus /></div><div className="form-group"><label>Senha</label><input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required /></div><button type="submit" className="btn btn-primary" style={{ width: '100%' }} disabled={loading}>{loading ? 'Entrando…' : 'Entrar'}</button></form><p style={{ textAlign: 'center', marginTop: '1rem', fontSize: '.875rem', color: 'var(--color-gray-500)' }}>Ainda não tem conta?{' '}<Link to="/register" style={{ color: 'var(--color-primary)', fontWeight: 600 }}>Cadastre-se</Link></p></div></>);
 }
 
 function CriarModal({ jobs, areas, onClose, onCriado }: { jobs: Job[]; areas: Area[]; onClose: () => void; onCriado: () => void }) {

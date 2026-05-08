@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { NavBar } from '../components/NavBar';
 import { getToken, setToken, clearToken, apiFetch } from '../lib/api';
 
@@ -86,6 +87,10 @@ function LoginForm({ onLogin }: { onLogin: () => void }) {
             {loading ? 'Entrando…' : 'Entrar'}
           </button>
         </form>
+        <p style={{ textAlign: 'center', marginTop: '1rem', fontSize: '.875rem', color: 'var(--color-gray-500)' }}>
+          Ainda não tem conta?{' '}
+          <Link to="/register" style={{ color: 'var(--color-primary)', fontWeight: 600 }}>Cadastre-se</Link>
+        </p>
       </div>
     </>
   );
