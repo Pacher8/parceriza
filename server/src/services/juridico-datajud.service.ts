@@ -93,16 +93,16 @@ function getDataJudClient() {
   return axios.create({
     baseURL: env.DATAJUD_BASE_URL,
     headers: {
-      Authorization: `APIKey ${env.DATAJUD_API_KEY}`,
+      Authorization: `ApiKey ${env.DATAJUD_API_KEY}`,
       'Content-Type': 'application/json',
     },
     timeout: 20000,
   });
 }
 
-// The DataJud API uses Elasticsearch at: /api_publica-{tribunal}/_search
+// The DataJud API uses Elasticsearch at: /api_publica_{tribunal}/_search
 function tribunalEndpoint(tribunal: string): string {
-  return `/api_publica-${tribunal.toLowerCase()}/_search`;
+  return `/api_publica_${tribunal.toLowerCase()}/_search`;
 }
 
 // ── Queries ───────────────────────────────────────────────────────────────────
