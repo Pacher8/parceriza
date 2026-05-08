@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { NavBar } from '../components/NavBar';
 
 type AdFeed = { id: string; titulo: string; descricao: string; mediaUrl: string | null; posicionamento: string };
