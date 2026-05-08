@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-
-function getToken() { return localStorage.getItem('parceriza_token'); }
+import { getToken, apiUrl } from '../lib/api';
 
 interface NavBarProps {
   onLogout?: () => void;
@@ -14,7 +13,7 @@ export function NavBar({ onLogout, refreshKey = 0 }: NavBarProps) {
 
   useEffect(() => {
     if (!token) { setSaldo(null); return; }
-    fetch('/api/tokens/saldo', { headers: { Authorization: `Bearer ${token}` } })
+    fetch(apiUrl('/api/tokens/saldo'), { headers: { Authorization: `Bearer ${token}` } })
       .then((r) => (r.ok ? r.json() : null))
       .then((d: { saldo: number } | null) => d && setSaldo(d.saldo))
       .catch(() => {});

@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { NavBar } from '../components/NavBar';
+import { apiUrl } from '../lib/api';
 
 type AdFeed = { id: string; titulo: string; descricao: string; mediaUrl: string | null; posicionamento: string };
 type Area = { nome: string; slug: string };
@@ -39,9 +40,9 @@ export function Jobs() {
 
   useEffect(() => {
     Promise.all([
-      fetch('/api/jobs').then((r) => r.json()),
-      fetch('/api/areas').then((r) => r.json()),
-      fetch('/api/ads/feed?posicionamento=BANNER_BUSCA&limite=2').then((r) => r.json()).catch(() => ({ anuncios: [] })),
+      fetch(apiUrl('/api/jobs')).then((r) => r.json()),
+      fetch(apiUrl('/api/areas')).then((r) => r.json()),
+      fetch(apiUrl('/api/ads/feed?posicionamento=BANNER_BUSCA&limite=2')).then((r) => r.json()).catch(() => ({ anuncios: [] })),
     ])
       .then(([jobsData, areasData, adsData]) => {
         setJobs(jobsData.jobs ?? []);

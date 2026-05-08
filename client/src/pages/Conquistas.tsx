@@ -2,20 +2,7 @@ import { useEffect, useState } from 'react';
 import confetti from 'canvas-confetti';
 import { NavBar } from '../components/NavBar';
 
-function getToken() { return localStorage.getItem('parceriza_token'); }
-function setToken(t: string) { localStorage.setItem('parceriza_token', t); }
-function clearToken() { localStorage.removeItem('parceriza_token'); }
-
-async function apiFetch<T>(path: string, options: RequestInit = {}): Promise<T> {
-  const token = getToken();
-  const res = await fetch(path, {
-    ...options,
-    headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}), ...((options.headers as Record<string, string>) ?? {}) },
-  });
-  const json = await res.json();
-  if (!res.ok) throw new Error(json.error ?? `HTTP ${res.status}`);
-  return json as T;
-}
+import { getToken, setToken, clearToken, apiFetch } from '../lib/api';
 
 type Tarefa = {
   id: string; titulo: string; descricao: string; tipo: string; categoria: string;

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { NavBar } from '../components/NavBar';
+import { apiUrl } from '../lib/api';
 
 type Stats = { totalAdvogados: number; totalJobs: number; totalLeads: number; totalParcerias: number };
 type Area = { id: string; nome: string; slug: string; descricao: string | null };
@@ -19,9 +20,9 @@ export function Home() {
 
   useEffect(() => {
     Promise.all([
-      fetch('/api/ads/stats').then((r) => r.ok ? r.json() : null).catch(() => null),
-      fetch('/api/areas').then((r) => r.json()).catch(() => ({ areas: [] })),
-      fetch('/api/jobs').then((r) => r.json()).catch(() => ({ jobs: [] })),
+      fetch(apiUrl('/api/ads/stats')).then((r) => r.ok ? r.json() : null).catch(() => null),
+      fetch(apiUrl('/api/areas')).then((r) => r.json()).catch(() => ({ areas: [] })),
+      fetch(apiUrl('/api/jobs')).then((r) => r.json()).catch(() => ({ jobs: [] })),
     ]).then(([s, a, j]) => {
       if (s) setStats(s);
       setAreas((a.areas ?? []).slice(0, 10));

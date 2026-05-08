@@ -1,20 +1,7 @@
 import { useEffect, useState } from 'react';
 import { NavBar } from '../components/NavBar';
 
-function getToken() { return localStorage.getItem('parceriza_token'); }
-function setToken(t: string) { localStorage.setItem('parceriza_token', t); }
-function clearToken() { localStorage.removeItem('parceriza_token'); }
-
-async function apiFetch<T>(path: string, options: RequestInit = {}): Promise<T> {
-  const token = getToken();
-  const res = await fetch(path, {
-    ...options,
-    headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}), ...((options.headers as Record<string, string>) ?? {}) },
-  });
-  const json = await res.json();
-  if (!res.ok) throw new Error(json.error ?? `HTTP ${res.status}`);
-  return json as T;
-}
+import { getToken, setToken, clearToken, apiFetch, apiUrl } from '../lib/api';
 
 type AdvogadoData = {
   nome: string; email: string; oab: string; oabUf: string; bio: string | null;
@@ -79,7 +66,7 @@ export function Apresentacao() {
     setGerando(true);
     try {
       const tkn = getToken()!;
-      const res = await fetch('/api/tokens/apresentacao', {
+      const res = await fetch(apiUrl('/api/tokens/apresentacao'), {
         method: 'POST',
         headers: { Authorization: `Bearer ${tkn}`, 'Content-Type': 'application/json' },
       });
