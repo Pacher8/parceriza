@@ -215,7 +215,7 @@ function getWeekDays(): Date[] {
   return Array.from({ length: 7 }, (_, i) => { const d = new Date(monday); d.setDate(monday.getDate() + i); return d; });
 }
 
-function AgendaTab({ conectado, onConectar }: { conectado: boolean; onConectar: () => void }) {
+function AgendaTab({ conectado }: { conectado: boolean }) {
   const [eventos, setEventos] = useState<Evento[]>([]);
   const [slotsLivres, setSlotsLivres] = useState<Slot[]>([]);
   const [loading, setLoading] = useState(false);
@@ -354,7 +354,7 @@ function FinanceiroTab() {
   const [form, setForm] = useState({ clienteId: '', valor: '', vencimento: '', descricao: '', tipo: 'PIX' });
   const [novoClienteForm, setNovoClienteForm] = useState({ nome: '', cpfCnpj: '', email: '' });
   const [criandoCliente, setCriandoCliente] = useState(false);
-  const [clienteId, setClienteId] = useState('');
+  const [, setClienteId] = useState('');
   const [subTab, setSubTab] = useState<'cobrancas' | 'novo-cliente'>('cobrancas');
 
   useEffect(() => {
@@ -684,7 +684,7 @@ export function Secretaria() {
   const [token, setTokenState] = useState<string | null>(getToken);
   const [tab, setTab] = useState<TabId>((searchParams.get('tab') as TabId) ?? 'agenda');
   const [agendaStatus, setAgendaStatus] = useState<{ conectado: boolean } | null>(null);
-  const [loadingStatus, setLoadingStatus] = useState(false);
+  const [, setLoadingStatus] = useState(false);
 
   useEffect(() => {
     if (!token) return;
@@ -726,10 +726,7 @@ export function Secretaria() {
         </div>
 
         {tab === 'agenda' && (
-          <AgendaTab
-            conectado={agendaStatus?.conectado ?? false}
-            onConectar={() => setAgendaStatus({ conectado: true })}
-          />
+          <AgendaTab conectado={agendaStatus?.conectado ?? false} />
         )}
         {tab === 'financeiro' && <FinanceiroTab />}
         {tab === 'controladoria' && <ControladoriaTab />}
