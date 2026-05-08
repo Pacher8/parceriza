@@ -8,6 +8,7 @@ COPY client/ ./client/
 RUN cd client && npm run build
 
 FROM nginx:alpine AS runtime
+ENV PORT=80
 COPY --from=build /app/client/dist /usr/share/nginx/html
 # Copiado como template — PORT é substituído pelo entrypoint em runtime
 COPY client/nginx.conf /etc/nginx/conf.d/default.conf.template
