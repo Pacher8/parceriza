@@ -110,8 +110,8 @@ export function Termos() {
           <Section title="14. Contato">
             <p>Dúvidas sobre estes Termos podem ser encaminhadas para:</p>
             <p>
-              <strong>HMP Advocacia &amp; Preddita</strong><br />
-              Jaraguá do Sul — SC<br />
+              <strong>PREDDITA LTDA.</strong><br />
+              CNPJ 46.108.670/0001-27 — Jaraguá do Sul — SC<br />
               E-mail: <a href="mailto:contato@parceriza.com.br" style={{ color: 'var(--color-primary)' }}>contato@parceriza.com.br</a>
             </p>
           </Section>

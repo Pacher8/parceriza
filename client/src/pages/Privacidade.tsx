@@ -14,7 +14,7 @@ export function Privacidade() {
         <div style={{ lineHeight: 1.8, color: 'var(--color-gray-700)', fontSize: '.9375rem' }}>
 
           <Section title="1. Quem Somos (Controlador)">
-            <p>A <strong>Parceriza</strong>, operada pela HMP Advocacia &amp; Preddita, com sede em Jaraguá do Sul — SC, é a controladora dos dados pessoais tratados nesta plataforma, nos termos da Lei nº 13.709/2018 (LGPD).</p>
+            <p>A <strong>Parceriza</strong> é uma plataforma operada pela <strong>PREDDITA LTDA.</strong>, inscrita no CNPJ sob o nº 46.108.670/0001-27, com sede em Jaraguá do Sul — SC, controladora dos dados pessoais tratados nesta plataforma, nos termos da Lei nº 13.709/2018 (LGPD).</p>
             <p>Encarregado de Dados (DPO): <a href="mailto:privacidade@parceriza.com.br" style={{ color: 'var(--color-primary)' }}>privacidade@parceriza.com.br</a></p>
           </Section>
 
