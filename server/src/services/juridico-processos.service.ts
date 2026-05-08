@@ -13,18 +13,41 @@ export async function consultarProcesso(advogadoId: string, input: ConsultarProc
   const tribunal = input.tribunal ?? 'tjsc';
   let processos: datajud.DataJudProcesso[] = [];
 
-  if (input.numero) {
+  const filtros: datajud.FiltrosConsulta = {
+    numero:       input.numero,
+    cpf:          input.cpf,
+    cnpj:         input.cnpj,
+    nomeParte:    input.nomeParte,
+    nomeAdvogado: input.nomeAdvogado,
+    classe:       input.classe,
+    assunto:      input.assunto,
+    vara:         input.vara,
+    grau:         input.grau,
+    polo:         input.polo,
+    dataInicio:   input.dataInicio,
+    dataFim:      input.dataFim,
+  };
+
+  if (input.multiTribunal) {
+    processos = await datajud.buscarMultiTribunal(filtros);
+  } else if (input.numero) {
+    // Número: compat path para manter busca exata
     processos = await datajud.buscarPorNumero(input.numero, tribunal);
     if (processos.length === 0) throw new HttpError(404, 'Nenhum processo encontrado para o número informado');
-  } else if (input.cpf || input.cnpj) {
+  } else if ((input.cpf || input.cnpj) && !input.nomeParte && !input.nomeAdvogado && !input.classe && !input.assunto && !input.vara && !input.grau && !input.polo && !input.dataInicio && !input.dataFim) {
+    // Documento puro (sem filtros extras): usa path específico p/ TRF
     const doc = input.cpf ?? input.cnpj!;
-    // Federal courts may need a different query strategy
     processos = TRF_TRIBUNAIS.has(tribunal)
       ? await datajud.buscarPorDocumentoTRF(doc, tribunal)
       : await datajud.buscarPorDocumento(doc, tribunal);
-
     if (processos.length === 0) {
-      throw new HttpError(404, `Nenhum processo encontrado para o documento informado no ${tribunal.toUpperCase()}`);
+      throw new HttpError(404, `Nenhum processo encontrado para o documento no ${tribunal.toUpperCase()}`);
+    }
+  } else {
+    // Qualquer combinação de filtros
+    processos = await datajud.buscarComFiltros(filtros, tribunal);
+    if (processos.length === 0) {
+      throw new HttpError(404, 'Nenhum processo encontrado para os critérios informados');
     }
   }
 

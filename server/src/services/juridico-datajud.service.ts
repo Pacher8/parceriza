@@ -107,11 +107,18 @@ function tribunalEndpoint(tribunal: string): string {
 
 // ── Queries ───────────────────────────────────────────────────────────────────
 
+const SOURCE_FIELDS = ['numeroProcesso', 'tribunal', 'grau', 'classe', 'assuntos', 'orgaoJulgador', 'partes', 'movimentos', 'dataAjuizamento', 'nivelSigilo'];
+
+function formatNumero(n: string) {
+  const digits = n.replace(/\D/g, '');
+  return digits.replace(/(\d{7})(\d{2})(\d{4})(\d{1})(\d{2})(\d{4})/, '$1-$2.$3.$4.$5.$6') || n;
+}
+
 function queryByNumero(numero: string) {
   return {
-    query: { match: { numeroProcesso: numero.replace(/\D/g, '').replace(/(\d{7})(\d{2})(\d{4})(\d{1})(\d{2})(\d{4})/, '$1-$2.$3.$4.$5.$6') || numero } },
+    query: { match: { numeroProcesso: formatNumero(numero) } },
     size: 5,
-    _source: ['numeroProcesso', 'tribunal', 'grau', 'classe', 'assuntos', 'orgaoJulgador', 'partes', 'movimentos', 'dataAjuizamento', 'nivelSigilo'],
+    _source: SOURCE_FIELDS,
   };
 }
 
@@ -125,8 +132,82 @@ function queryByDocumento(documento: string) {
       },
     },
     size: 10,
-    _source: ['numeroProcesso', 'tribunal', 'grau', 'classe', 'assuntos', 'orgaoJulgador', 'partes', 'movimentos', 'dataAjuizamento'],
+    _source: SOURCE_FIELDS,
   };
+}
+
+export type FiltrosConsulta = {
+  numero?: string | null;
+  cpf?: string | null;
+  cnpj?: string | null;
+  nomeParte?: string | null;
+  nomeAdvogado?: string | null;
+  classe?: string | null;
+  assunto?: string | null;
+  vara?: string | null;
+  grau?: string | null;
+  polo?: string | null;
+  dataInicio?: string | null;
+  dataFim?: string | null;
+};
+
+function buildBoolQuery(f: FiltrosConsulta) {
+  const must: object[] = [];
+  const filter: object[] = [];
+
+  if (f.numero) {
+    must.push({ match: { numeroProcesso: formatNumero(f.numero) } });
+  }
+
+  if (f.cpf || f.cnpj) {
+    const doc = (f.cpf ?? f.cnpj!).replace(/\D/g, '');
+    must.push({ nested: { path: 'partes', query: { match: { 'partes.numeroDocumentoPrincipal': doc } } } });
+  }
+
+  if (f.nomeParte) {
+    const parteMusts: object[] = [{ match: { 'partes.nome': { query: f.nomeParte, operator: 'and' } } }];
+    if (f.polo) parteMusts.push({ term: { 'partes.polo': f.polo } });
+    must.push({ nested: { path: 'partes', query: { bool: { must: parteMusts } } } });
+  }
+
+  if (f.nomeAdvogado) {
+    must.push({ nested: { path: 'partes', query: { match: { 'partes.nome': { query: f.nomeAdvogado, operator: 'and' } } } } });
+  }
+
+  // polo sem nome — aplica como filter separado
+  if (f.polo && !f.nomeParte) {
+    filter.push({ nested: { path: 'partes', query: { term: { 'partes.polo': f.polo } } } });
+  }
+
+  if (f.classe) {
+    must.push({ match: { 'classe.nome': { query: f.classe, operator: 'or' } } });
+  }
+
+  if (f.assunto) {
+    must.push({ match: { 'assuntos.nome': { query: f.assunto, operator: 'or' } } });
+  }
+
+  if (f.vara) {
+    must.push({ match: { 'orgaoJulgador.nome': { query: f.vara, operator: 'and' } } });
+  }
+
+  if (f.grau) {
+    filter.push({ term: { grau: f.grau } });
+  }
+
+  if (f.dataInicio || f.dataFim) {
+    const range: Record<string, string> = {};
+    if (f.dataInicio) range.gte = f.dataInicio.replace(/-/g, '') + '000000';
+    if (f.dataFim)    range.lte = f.dataFim.replace(/-/g, '')   + '235959';
+    filter.push({ range: { dataAjuizamento: range } });
+  }
+
+  const query =
+    must.length === 0 && filter.length === 0
+      ? { match_all: {} }
+      : { bool: { ...(must.length ? { must } : {}), ...(filter.length ? { filter } : {}) } };
+
+  return { query, size: 20, _source: SOURCE_FIELDS };
 }
 
 // ── Public functions ──────────────────────────────────────────────────────────
@@ -153,18 +234,26 @@ export async function buscarPorDocumento(documento: string, tribunal = 'tjsc'): 
   }
 }
 
-// Search across multiple common tribunals when none specified
-// Silently skips tribunals that fail (unsupported query, timeout, etc.)
+export async function buscarComFiltros(filtros: FiltrosConsulta, tribunal: string): Promise<DataJudProcesso[]> {
+  const client = getDataJudClient();
+  const body = buildBoolQuery(filtros);
+  try {
+    const res = await client.post<DataJudResponse>(tribunalEndpoint(tribunal), body);
+    return (res.data.hits?.hits ?? []).map((h) => h._source);
+  } catch (err: unknown) {
+    if (axios.isAxiosError(err) && err.response?.status === 404) return [];
+    mapDataJudError(err, tribunal, 'numero');
+  }
+}
+
+// Search across multiple tribunals simultaneously; silently skips failures
 export async function buscarMultiTribunal(
-  query: { numero?: string; documento?: string },
-  tribunais = ['tjsc', 'tjsp', 'tjrj', 'tjmg', 'tjrs'],
+  filtros: FiltrosConsulta,
+  tribunais = ['tjsc', 'tjsp', 'tjrj', 'tjmg', 'tjrs', 'tjpr', 'tjba', 'tjce'],
 ): Promise<DataJudProcesso[]> {
-  const searches = tribunais.map((t) =>
-    query.numero
-      ? buscarPorNumero(query.numero, t).catch(() => [] as DataJudProcesso[])
-      : buscarPorDocumento(query.documento!, t).catch(() => [] as DataJudProcesso[]),
+  const results = await Promise.all(
+    tribunais.map((t) => buscarComFiltros(filtros, t).catch(() => [] as DataJudProcesso[])),
   );
-  const results = await Promise.all(searches);
   return results.flat();
 }
 

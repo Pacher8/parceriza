@@ -90,7 +90,23 @@ function LoginForm({ onLogin }: { onLogin: () => void }) {
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
-const TRIBUNAIS = ['tjsc', 'tjsp', 'tjrj', 'tjmg', 'tjrs', 'tjpr', 'tjba', 'tjce', 'trf1', 'trf4', 'stj'];
+const TRIBUNAIS = ['tjsc', 'tjsp', 'tjrj', 'tjmg', 'tjrs', 'tjpr', 'tjba', 'tjce', 'trf1', 'trf2', 'trf3', 'trf4', 'trf5', 'trf6', 'stj', 'stf', 'tst'];
+
+const GRAUS = [
+  { value: '', label: 'Todos os graus' },
+  { value: 'JE', label: 'Juizado Especial (JE)' },
+  { value: 'G1', label: '1º Grau (G1)' },
+  { value: 'G2', label: '2º Grau (G2)' },
+  { value: 'SUP', label: 'Superior (SUP)' },
+  { value: 'TURMA_REC', label: 'Turma Recursal' },
+];
+
+const POLOS = [
+  { value: '', label: 'Qualquer polo' },
+  { value: 'ATIVO', label: 'Polo Ativo (Autor)' },
+  { value: 'PASSIVO', label: 'Polo Passivo (Réu)' },
+  { value: 'TERCEIRO', label: 'Terceiro' },
+];
 
 function Stars({ media }: { media: number | null }) {
   if (media === null) return <span style={{ fontSize: '.75rem', color: 'var(--color-gray-400)' }}>Sem avaliações</span>;
@@ -190,15 +206,24 @@ function ProcessoCard({ p, autenticado }: { p: Processo; autenticado: boolean })
 
 // ── Consultar tab ─────────────────────────────────────────────────────────────
 
+type ModoBusca = 'numero' | 'cpf' | 'cnpj' | 'nomeParte' | 'nomeAdvogado';
+
 function ConsultarTab() {
-  const [modo, setModo] = useState<'numero' | 'cpf' | 'cnpj'>('numero');
+  const [modo, setModo] = useState<ModoBusca>('numero');
   const [valor, setValor] = useState('');
   const [tribunal, setTribunal] = useState('tjsc');
+  const [multiTribunal, setMultiTribunal] = useState(false);
+  const [mostrarFiltros, setMostrarFiltros] = useState(false);
+  const [filtros, setFiltros] = useState({ classe: '', assunto: '', vara: '', grau: '', polo: '', dataInicio: '', dataFim: '' });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [resultado, setResultado] = useState<Processo[] | null>(null);
   const [historico, setHistorico] = useState<Processo[]>([]);
   const [loadingHist, setLoadingHist] = useState(true);
+
+  function setFiltro<K extends keyof typeof filtros>(k: K, v: string) {
+    setFiltros((f) => ({ ...f, [k]: v }));
+  }
 
   useEffect(() => {
     apiFetch<{ processos: Processo[] }>('/api/juridico/processos')
@@ -209,15 +234,27 @@ function ConsultarTab() {
 
   async function handleBuscar(e: React.FormEvent) {
     e.preventDefault();
-    if (!valor.trim()) return;
+    if (!valor.trim() && !filtros.classe && !filtros.assunto && !filtros.vara) return;
     setLoading(true);
     setError(null);
     setResultado(null);
     try {
-      const body: Record<string, string> = { tribunal };
-      if (modo === 'numero') body.numero = valor;
-      else if (modo === 'cpf') body.cpf = valor;
-      else body.cnpj = valor;
+      const body: Record<string, unknown> = {
+        tribunal: multiTribunal ? 'tjsc' : tribunal,
+        multiTribunal,
+        ...(filtros.classe    && { classe: filtros.classe }),
+        ...(filtros.assunto   && { assunto: filtros.assunto }),
+        ...(filtros.vara      && { vara: filtros.vara }),
+        ...(filtros.grau      && { grau: filtros.grau }),
+        ...(filtros.polo      && { polo: filtros.polo }),
+        ...(filtros.dataInicio && { dataInicio: filtros.dataInicio }),
+        ...(filtros.dataFim   && { dataFim: filtros.dataFim }),
+      };
+      if (modo === 'numero')        body.numero       = valor;
+      else if (modo === 'cpf')      body.cpf          = valor;
+      else if (modo === 'cnpj')     body.cnpj         = valor;
+      else if (modo === 'nomeParte')    body.nomeParte    = valor;
+      else if (modo === 'nomeAdvogado') body.nomeAdvogado = valor;
 
       const data = await apiFetch<{ total: number; processos: Processo[] }>('/api/juridico/processos/consultar', { method: 'POST', body: JSON.stringify(body) });
       setResultado(data.processos);
@@ -234,40 +271,105 @@ function ConsultarTab() {
     }
   }
 
-  const modos = [
-    { key: 'numero', label: 'Número CNJ' },
-    { key: 'cpf', label: 'CPF' },
-    { key: 'cnpj', label: 'CNPJ' },
-  ] as const;
+  const modos: { key: ModoBusca; label: string; placeholder: string }[] = [
+    { key: 'numero',       label: 'Número CNJ',     placeholder: '0001234-12.2023.8.24.0001' },
+    { key: 'cpf',          label: 'CPF',             placeholder: '000.000.000-00' },
+    { key: 'cnpj',         label: 'CNPJ',            placeholder: '00.000.000/0001-00' },
+    { key: 'nomeParte',    label: 'Nome da Parte',   placeholder: 'Nome do cliente ou empresa' },
+    { key: 'nomeAdvogado', label: 'Nome/OAB Adv.',   placeholder: 'Nome do advogado' },
+  ];
 
-  const placeholders: Record<string, string> = {
-    numero: '0001234-12.2023.8.24.0001',
-    cpf: '000.000.000-00',
-    cnpj: '00.000.000/0001-00',
-  };
+  const modoAtual = modos.find((m) => m.key === modo)!;
+
+  const temFiltrosAtivos = Object.values(filtros).some(Boolean);
 
   return (
     <div>
-      <form className="search-bar" onSubmit={handleBuscar}>
-        <div className="toggle-group">
+      <form onSubmit={handleBuscar}>
+        {/* Modo de busca */}
+        <div className="toggle-group" style={{ flexWrap: 'wrap', marginBottom: '.75rem' }}>
           {modos.map((m) => (
             <button key={m.key} type="button" className={modo === m.key ? 'active' : ''} onClick={() => { setModo(m.key); setValor(''); }}>
               {m.label}
             </button>
           ))}
         </div>
-        <input
-          value={valor}
-          onChange={(e) => setValor(e.target.value)}
-          placeholder={placeholders[modo]}
-          required
-        />
-        <select className="tribunal-select" value={tribunal} onChange={(e) => setTribunal(e.target.value)}>
-          {TRIBUNAIS.map((t) => <option key={t} value={t}>{t.toUpperCase()}</option>)}
-        </select>
-        <button type="submit" className="btn btn-primary" disabled={loading}>
-          {loading ? 'Buscando…' : 'Buscar'}
-        </button>
+
+        {/* Barra principal */}
+        <div className="search-bar">
+          <input
+            value={valor}
+            onChange={(e) => setValor(e.target.value)}
+            placeholder={modoAtual.placeholder}
+          />
+          {!multiTribunal && (
+            <select className="tribunal-select" value={tribunal} onChange={(e) => setTribunal(e.target.value)}>
+              {TRIBUNAIS.map((t) => <option key={t} value={t}>{t.toUpperCase()}</option>)}
+            </select>
+          )}
+          <button type="submit" className="btn btn-primary" disabled={loading}>
+            {loading ? 'Buscando…' : 'Buscar'}
+          </button>
+        </div>
+
+        {/* Controles secundários */}
+        <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', marginTop: '.5rem', flexWrap: 'wrap' }}>
+          <label style={{ display: 'flex', alignItems: 'center', gap: '.35rem', fontSize: '.8rem', color: 'var(--color-gray-600)', cursor: 'pointer' }}>
+            <input type="checkbox" checked={multiTribunal} onChange={(e) => setMultiTribunal(e.target.checked)} />
+            Buscar em múltiplos tribunais (TJSC, TJSP, TJRJ, TJMG, TJRS, TJPR, TJBA, TJCE)
+          </label>
+          <button
+            type="button"
+            className={`btn btn-ghost btn-sm ${temFiltrosAtivos ? 'btn-active' : ''}`}
+            onClick={() => setMostrarFiltros(!mostrarFiltros)}
+            style={{ marginLeft: 'auto' }}
+          >
+            {temFiltrosAtivos ? '● ' : ''}Filtros avançados {mostrarFiltros ? '▲' : '▼'}
+          </button>
+        </div>
+
+        {/* Filtros avançados */}
+        {mostrarFiltros && (
+          <div style={{ marginTop: '.75rem', padding: '1rem', background: 'var(--color-gray-50)', borderRadius: 'var(--radius)', display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '.75rem' }}>
+            <div className="form-group" style={{ margin: 0 }}>
+              <label style={{ fontSize: '.75rem' }}>Classe processual</label>
+              <input value={filtros.classe} onChange={(e) => setFiltro('classe', e.target.value)} placeholder="Ex: Execução, Monitória" />
+            </div>
+            <div className="form-group" style={{ margin: 0 }}>
+              <label style={{ fontSize: '.75rem' }}>Assunto</label>
+              <input value={filtros.assunto} onChange={(e) => setFiltro('assunto', e.target.value)} placeholder="Ex: Nota Promissória, Dano Moral" />
+            </div>
+            <div className="form-group" style={{ margin: 0 }}>
+              <label style={{ fontSize: '.75rem' }}>Vara / Órgão julgador</label>
+              <input value={filtros.vara} onChange={(e) => setFiltro('vara', e.target.value)} placeholder="Ex: 1ª Vara Cível" />
+            </div>
+            <div className="form-group" style={{ margin: 0 }}>
+              <label style={{ fontSize: '.75rem' }}>Grau</label>
+              <select value={filtros.grau} onChange={(e) => setFiltro('grau', e.target.value)}>
+                {GRAUS.map((g) => <option key={g.value} value={g.value}>{g.label}</option>)}
+              </select>
+            </div>
+            <div className="form-group" style={{ margin: 0 }}>
+              <label style={{ fontSize: '.75rem' }}>Polo da parte buscada</label>
+              <select value={filtros.polo} onChange={(e) => setFiltro('polo', e.target.value)}>
+                {POLOS.map((p) => <option key={p.value} value={p.value}>{p.label}</option>)}
+              </select>
+            </div>
+            <div className="form-group" style={{ margin: 0 }}>
+              <label style={{ fontSize: '.75rem' }}>Ajuizamento — de</label>
+              <input type="date" value={filtros.dataInicio} onChange={(e) => setFiltro('dataInicio', e.target.value)} />
+            </div>
+            <div className="form-group" style={{ margin: 0 }}>
+              <label style={{ fontSize: '.75rem' }}>Ajuizamento — até</label>
+              <input type="date" value={filtros.dataFim} onChange={(e) => setFiltro('dataFim', e.target.value)} />
+            </div>
+            <div style={{ display: 'flex', alignItems: 'flex-end' }}>
+              <button type="button" className="btn btn-ghost btn-sm" onClick={() => setFiltros({ classe: '', assunto: '', vara: '', grau: '', polo: '', dataInicio: '', dataFim: '' })}>
+                Limpar filtros
+              </button>
+            </div>
+          </div>
+        )}
       </form>
 
       {error && <div className="error-msg">{error}</div>}

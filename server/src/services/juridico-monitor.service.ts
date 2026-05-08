@@ -76,7 +76,9 @@ export async function verificarTodosMonitores(): Promise<void> {
 
   for (const monitor of monitores) {
     try {
-      const processos = await datajud.buscarMultiTribunal({ documento: monitor.documento });
+      const doc = monitor.documento.replace(/\D/g, '');
+      const filtroDoc = monitor.tipoDocumento === 'CPF' ? { cpf: doc } : { cnpj: doc };
+      const processos = await datajud.buscarMultiTribunal(filtroDoc);
 
       for (const p of processos) {
         await prisma.processo.upsert({
