@@ -125,12 +125,7 @@ function queryByNumero(numero: string) {
 function queryByDocumento(documento: string) {
   const doc = documento.replace(/\D/g, '');
   return {
-    query: {
-      nested: {
-        path: 'partes',
-        query: { match: { 'partes.numeroDocumentoPrincipal': doc } },
-      },
-    },
+    query: { match: { 'partes.numeroDocumentoPrincipal': doc } },
     size: 10,
     _source: SOURCE_FIELDS,
   };
@@ -161,22 +156,19 @@ function buildBoolQuery(f: FiltrosConsulta) {
 
   if (f.cpf || f.cnpj) {
     const doc = (f.cpf ?? f.cnpj!).replace(/\D/g, '');
-    must.push({ nested: { path: 'partes', query: { match: { 'partes.numeroDocumentoPrincipal': doc } } } });
+    must.push({ match: { 'partes.numeroDocumentoPrincipal': doc } });
   }
 
   if (f.nomeParte) {
-    const parteMusts: object[] = [{ match: { 'partes.nome': { query: f.nomeParte, operator: 'and' } } }];
-    if (f.polo) parteMusts.push({ term: { 'partes.polo': f.polo } });
-    must.push({ nested: { path: 'partes', query: { bool: { must: parteMusts } } } });
+    must.push({ match: { 'partes.nome': { query: f.nomeParte, operator: 'and' } } });
   }
 
   if (f.nomeAdvogado) {
-    must.push({ nested: { path: 'partes', query: { match: { 'partes.nome': { query: f.nomeAdvogado, operator: 'and' } } } } });
+    must.push({ match: { 'partes.nome': { query: f.nomeAdvogado, operator: 'and' } } });
   }
 
-  // polo sem nome — aplica como filter separado
-  if (f.polo && !f.nomeParte) {
-    filter.push({ nested: { path: 'partes', query: { term: { 'partes.polo': f.polo } } } });
+  if (f.polo) {
+    filter.push({ term: { 'partes.polo': f.polo } });
   }
 
   if (f.classe) {
@@ -262,11 +254,8 @@ export async function buscarPorDocumentoTRF(documento: string, tribunal: string)
   const client = getDataJudClient();
   const doc = documento.replace(/\D/g, '');
 
-  // TRFs may index CPF under different field paths — try both
+  // TRFs use flat structure — no nested mapping for partes
   const queries = [
-    // Standard nested path
-    { query: { nested: { path: 'partes', query: { match: { 'partes.numeroDocumentoPrincipal': doc } } } }, size: 10 },
-    // Some TRFs use a flat structure
     { query: { match: { 'partes.numeroDocumentoPrincipal': doc } }, size: 10 },
   ];
 
