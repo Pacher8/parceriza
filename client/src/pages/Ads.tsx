@@ -228,6 +228,7 @@ export function Ads() {
             { value: totalImpressoes.toLocaleString('pt-BR'), label: 'Impressões' },
             { value: totalCliques.toLocaleString('pt-BR'), label: 'Cliques' },
             { value: `${ctrMedio}%`, label: 'CTR Médio' },
+            { value: totalGasto.toLocaleString('pt-BR'), label: 'Tokens Gastos' },
           ].map((s) => (
             <div key={s.label} className="ads-summary-card">
               <div className="ads-summary-value">{s.value}</div>
