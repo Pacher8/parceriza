@@ -1,5 +1,8 @@
 FROM node:20-alpine AS build
 WORKDIR /app
+# VITE_API_URL precisa ser ARG (build-time) — Railway injeta como build argument
+ARG VITE_API_URL
+ENV VITE_API_URL=$VITE_API_URL
 # package-lock.json fica na raiz do monorepo (npm workspaces)
 COPY package.json package-lock.json ./
 COPY client/package.json ./client/
