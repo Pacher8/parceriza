@@ -23,7 +23,19 @@ export const consultarProcessoSchema = z.object({
   tribunal:      z.string().max(10).optional().nullable().default('tjsc'),
   multiTribunal: z.boolean().optional().default(false),
 }).refine(
-  (d) => d.numero || d.cpf || d.cnpj || d.nomeParte || d.nomeAdvogado || d.classe || d.assunto || d.vara,
+  (d) =>
+    d.numero     ||
+    d.cpf        ||
+    d.cnpj       ||
+    d.nomeParte  ||
+    d.nomeAdvogado ||
+    d.classe     ||
+    d.assunto    ||
+    d.vara       ||
+    d.grau       ||
+    d.polo       ||
+    d.dataInicio ||
+    d.dataFim,
   { message: 'Informe pelo menos um critério de busca' },
 );
 export type ConsultarProcessoInput = z.infer<typeof consultarProcessoSchema>;

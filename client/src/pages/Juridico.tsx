@@ -234,7 +234,8 @@ function ConsultarTab() {
 
   async function handleBuscar(e: React.FormEvent) {
     e.preventDefault();
-    if (!valor.trim() && !filtros.classe && !filtros.assunto && !filtros.vara) return;
+    const temFiltro = Object.values(filtros).some(Boolean);
+    if (!valor.trim() && !temFiltro) return;
     setLoading(true);
     setError(null);
     setResultado(null);
@@ -250,11 +251,12 @@ function ConsultarTab() {
         ...(filtros.dataInicio && { dataInicio: filtros.dataInicio }),
         ...(filtros.dataFim   && { dataFim: filtros.dataFim }),
       };
-      if (modo === 'numero')        body.numero       = valor;
-      else if (modo === 'cpf')      body.cpf          = valor;
-      else if (modo === 'cnpj')     body.cnpj         = valor;
-      else if (modo === 'nomeParte')    body.nomeParte    = valor;
-      else if (modo === 'nomeAdvogado') body.nomeAdvogado = valor;
+      const v = valor.trim();
+      if (modo === 'numero'        && v) body.numero       = v;
+      else if (modo === 'cpf'      && v) body.cpf          = v;
+      else if (modo === 'cnpj'     && v) body.cnpj         = v;
+      else if (modo === 'nomeParte'    && v) body.nomeParte    = v;
+      else if (modo === 'nomeAdvogado' && v) body.nomeAdvogado = v;
 
       const data = await apiFetch<{ total: number; processos: Processo[] }>('/api/juridico/processos/consultar', { method: 'POST', body: JSON.stringify(body) });
       setResultado(data.processos);
