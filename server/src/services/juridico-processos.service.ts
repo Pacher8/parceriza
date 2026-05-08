@@ -12,62 +12,44 @@ const TRF_TRIBUNAIS = new Set(['trf1', 'trf2', 'trf3', 'trf4', 'trf5', 'trf6']);
 export async function consultarProcesso(advogadoId: string, input: ConsultarProcessoInput) {
   const tribunal = input.tribunal ?? 'tjsc';
   let processos: datajud.DataJudProcesso[] = [];
+  let porTribunal: Record<string, number> | undefined;
 
   const filtros: datajud.FiltrosConsulta = {
-    numero:       input.numero,
-    cpf:          input.cpf,
-    cnpj:         input.cnpj,
-    nomeParte:    input.nomeParte,
-    nomeAdvogado: input.nomeAdvogado,
-    classe:       input.classe,
-    assunto:      input.assunto,
-    vara:         input.vara,
-    grau:         input.grau,
-    polo:         input.polo,
-    dataInicio:   input.dataInicio,
-    dataFim:      input.dataFim,
+    numero:     input.numero,
+    classe:     input.classe,
+    assunto:    input.assunto,
+    vara:       input.vara,
+    grau:       input.grau,
+    dataInicio: input.dataInicio,
+    dataFim:    input.dataFim,
   };
 
+  console.log(`[JURIDICO] consulta: tribunal=${tribunal} multiTribunal=${input.multiTribunal} filtros=${JSON.stringify(filtros)}`);
+
   if (input.multiTribunal) {
-    processos = await datajud.buscarMultiTribunal(filtros);
+    const tribunais = input.tribunais?.length ? input.tribunais : undefined;
+    const result = await datajud.buscarMultiTribunal(filtros, tribunais);
+    processos = result.processos;
+    porTribunal = result.porTribunal;
   } else if (input.numero) {
-    // Número: compat path para manter busca exata
     processos = await datajud.buscarPorNumero(input.numero, tribunal);
     if (processos.length === 0) throw new HttpError(404, 'Nenhum processo encontrado para o número informado');
-  } else if ((input.cpf || input.cnpj) && !input.nomeParte && !input.nomeAdvogado && !input.classe && !input.assunto && !input.vara && !input.grau && !input.polo && !input.dataInicio && !input.dataFim) {
-    // Documento puro (sem filtros extras): usa path específico p/ TRF
-    const doc = input.cpf ?? input.cnpj!;
-    processos = TRF_TRIBUNAIS.has(tribunal)
-      ? await datajud.buscarPorDocumentoTRF(doc, tribunal)
-      : await datajud.buscarPorDocumento(doc, tribunal);
-    if (processos.length === 0) {
-      throw new HttpError(404, `Nenhum processo encontrado para o documento no ${tribunal.toUpperCase()}`);
-    }
   } else {
-    // Qualquer combinação de filtros
     processos = await datajud.buscarComFiltros(filtros, tribunal);
     if (processos.length === 0) {
       throw new HttpError(404, 'Nenhum processo encontrado para os critérios informados');
     }
   }
 
+  console.log(`[JURIDICO] retornados: ${processos.length} processos`);
+
   // Upsert each result into our DB
   const saved = await Promise.all(
     processos.map(async (p) => {
       // Find or create a monitor to link to (orphan record if no monitor)
       let monitor = await prisma.processoMonitor.findFirst({
-        where: { advogadoId, documento: input.cpf ?? input.cnpj ?? '' },
+        where: { advogadoId, documento: `NUM:${p.numeroProcesso}` },
       });
-
-      if (!monitor && (input.cpf || input.cnpj)) {
-        monitor = await prisma.processoMonitor.create({
-          data: {
-            advogadoId,
-            documento: input.cpf ?? input.cnpj ?? '',
-            tipoDocumento: input.cpf ? 'CPF' : 'CNPJ',
-          },
-        });
-      }
 
       if (!monitor) {
         // Número search without a monitor — store temporarily on a sentinel monitor
@@ -96,7 +78,7 @@ export async function consultarProcesso(advogadoId: string, input: ConsultarProc
     }),
   );
 
-  return { total: processos.length, processos: saved };
+  return { total: processos.length, processos: saved, porTribunal: porTribunal ?? {} };
 }
 
 export async function listarProcessos(advogadoId: string) {

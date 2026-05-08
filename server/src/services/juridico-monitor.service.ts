@@ -76,9 +76,10 @@ export async function verificarTodosMonitores(): Promise<void> {
 
   for (const monitor of monitores) {
     try {
-      const doc = monitor.documento.replace(/\D/g, '');
-      const filtroDoc = monitor.tipoDocumento === 'CPF' ? { cpf: doc } : { cnpj: doc };
-      const processos = await datajud.buscarMultiTribunal(filtroDoc);
+      // partes não indexado no DataJud — monitor não consegue buscar por CPF/CNPJ
+      // mantém lógica mas retorna vazio; futuro: busca por número manual
+      const result = await datajud.buscarMultiTribunal({ numero: monitor.documento.startsWith('NUM:') ? monitor.documento.replace('NUM:', '') : undefined });
+      const processos = result.processos;
 
       for (const p of processos) {
         await prisma.processo.upsert({

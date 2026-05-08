@@ -100,6 +100,28 @@ function getDataJudClient() {
   });
 }
 
+// ── Tribunais disponíveis (verificado via API — 2026-05) ─────────────────────
+// Ativos: tjsc, trf4, stj
+// Indisponíveis (404): stf, jfsc, jfpr, jfrs
+// Nota: campo "partes" NÃO está indexado em nenhum tribunal — busca por
+//       nome/CPF via Elasticsearch retorna 0 resultados; partes aparecem
+//       apenas no _source ao buscar por número de processo.
+export const TRIBUNAIS_ATIVOS = ['tjsc', 'trf4', 'stj'] as const;
+export type TribunalSigla = (typeof TRIBUNAIS_ATIVOS)[number];
+
+// Códigos de movimentos relevantes (CNJ TPU)
+export const MOVIMENTO_LABELS: Record<number, string> = {
+  22:    'Distribuição',
+  26:    'Conclusão',
+  51:    'Conclusão',
+  848:   'Trânsito em julgado',
+  85:    'Petição / Arquivamento',
+  54:    'Acórdão',
+  12223: 'Sentença',
+  123:   'Remessa',
+  92:    'Publicação',
+};
+
 // The DataJud API uses Elasticsearch at: /api_publica_{tribunal}/_search
 function tribunalEndpoint(tribunal: string): string {
   return `/api_publica_${tribunal.toLowerCase()}/_search`;
@@ -131,19 +153,15 @@ function queryByDocumento(documento: string) {
   };
 }
 
+// Campos efetivamente indexados no DataJud (partes NÃO está indexado)
 export type FiltrosConsulta = {
-  numero?: string | null;
-  cpf?: string | null;
-  cnpj?: string | null;
-  nomeParte?: string | null;
-  nomeAdvogado?: string | null;
-  classe?: string | null;
-  assunto?: string | null;
-  vara?: string | null;
-  grau?: string | null;
-  polo?: string | null;
+  numero?:     string | null;
+  classe?:     string | null;
+  assunto?:    string | null;
+  vara?:       string | null;
+  grau?:       string | null;
   dataInicio?: string | null;
-  dataFim?: string | null;
+  dataFim?:    string | null;
 };
 
 function buildBoolQuery(f: FiltrosConsulta) {
@@ -153,40 +171,18 @@ function buildBoolQuery(f: FiltrosConsulta) {
   if (f.numero) {
     must.push({ match: { numeroProcesso: formatNumero(f.numero) } });
   }
-
-  if (f.cpf || f.cnpj) {
-    const doc = (f.cpf ?? f.cnpj!).replace(/\D/g, '');
-    must.push({ match: { 'partes.numeroDocumentoPrincipal': doc } });
-  }
-
-  if (f.nomeParte) {
-    must.push({ match: { 'partes.nome': { query: f.nomeParte, operator: 'and' } } });
-  }
-
-  if (f.nomeAdvogado) {
-    must.push({ match: { 'partes.nome': { query: f.nomeAdvogado, operator: 'and' } } });
-  }
-
-  if (f.polo) {
-    filter.push({ term: { 'partes.polo': f.polo } });
-  }
-
   if (f.classe) {
     must.push({ match: { 'classe.nome': { query: f.classe, operator: 'or' } } });
   }
-
   if (f.assunto) {
     must.push({ match: { 'assuntos.nome': { query: f.assunto, operator: 'or' } } });
   }
-
   if (f.vara) {
     must.push({ match: { 'orgaoJulgador.nome': { query: f.vara, operator: 'and' } } });
   }
-
   if (f.grau) {
     filter.push({ term: { grau: f.grau } });
   }
-
   if (f.dataInicio || f.dataFim) {
     const range: Record<string, string> = {};
     if (f.dataInicio) range.gte = f.dataInicio.replace(/-/g, '') + '000000';
@@ -199,7 +195,7 @@ function buildBoolQuery(f: FiltrosConsulta) {
       ? { match_all: {} }
       : { bool: { ...(must.length ? { must } : {}), ...(filter.length ? { filter } : {}) } };
 
-  return { query, size: 20, _source: SOURCE_FIELDS };
+  return { query, size: 20, sort: [{ dataHoraUltimaAtualizacao: { order: 'desc' } }], _source: SOURCE_FIELDS };
 }
 
 // ── Public functions ──────────────────────────────────────────────────────────
@@ -238,15 +234,26 @@ export async function buscarComFiltros(filtros: FiltrosConsulta, tribunal: strin
   }
 }
 
-// Search across multiple tribunals simultaneously; silently skips failures
+// Busca nos 3 tribunais ativos; retorna agrupado por tribunal
 export async function buscarMultiTribunal(
   filtros: FiltrosConsulta,
-  tribunais = ['tjsc', 'tjsp', 'tjrj', 'tjmg', 'tjrs', 'tjpr', 'tjba', 'tjce'],
-): Promise<DataJudProcesso[]> {
-  const results = await Promise.all(
-    tribunais.map((t) => buscarComFiltros(filtros, t).catch(() => [] as DataJudProcesso[])),
+  tribunais: string[] = [...TRIBUNAIS_ATIVOS],
+): Promise<{ processos: DataJudProcesso[]; porTribunal: Record<string, number> }> {
+  const entries = await Promise.all(
+    tribunais.map(async (t) => {
+      const processos = await buscarComFiltros(filtros, t).catch(() => [] as DataJudProcesso[]);
+      return { t, processos };
+    }),
   );
-  return results.flat();
+  const porTribunal: Record<string, number> = {};
+  const processos: DataJudProcesso[] = [];
+  for (const { t, processos: ps } of entries) {
+    if (ps.length > 0) {
+      porTribunal[t.toUpperCase()] = ps.length;
+      processos.push(...ps);
+    }
+  }
+  return { processos, porTribunal };
 }
 
 // TRF-specific: some federal courts require different field mapping

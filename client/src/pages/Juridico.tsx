@@ -90,22 +90,28 @@ function LoginForm({ onLogin }: { onLogin: () => void }) {
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
-const TRIBUNAIS = ['tjsc', 'tjsp', 'tjrj', 'tjmg', 'tjrs', 'tjpr', 'tjba', 'tjce', 'trf1', 'trf2', 'trf3', 'trf4', 'trf5', 'trf6', 'stj', 'stf', 'tst'];
+// Tribunais verificados via API — maio 2026
+// Nota: partes (nome/CPF) NÃO está indexado no DataJud; busca por número,
+//       classe, assunto, vara, grau e datas funcionam normalmente.
+const TRIBUNAIS_CONFIG = [
+  { sigla: 'tjsc', nome: 'TJSC — Tribunal de Justiça de SC',          ativo: true },
+  { sigla: 'trf4', nome: 'TRF4 — Tribunal Regional Federal 4ª Região', ativo: true },
+  { sigla: 'stj',  nome: 'STJ — Superior Tribunal de Justiça',         ativo: true },
+  { sigla: 'stf',  nome: 'STF — Supremo Tribunal Federal',             ativo: false },
+  { sigla: 'jfsc', nome: 'JFSC — Justiça Federal SC',                  ativo: false },
+  { sigla: 'jfpr', nome: 'JFPR — Justiça Federal PR',                  ativo: false },
+  { sigla: 'jfrs', nome: 'JFRS — Justiça Federal RS',                  ativo: false },
+] as const;
+
+const SIGLAS_ATIVAS = TRIBUNAIS_CONFIG.filter((t) => t.ativo).map((t) => t.sigla);
 
 const GRAUS = [
   { value: '', label: 'Todos os graus' },
-  { value: 'JE', label: 'Juizado Especial (JE)' },
-  { value: 'G1', label: '1º Grau (G1)' },
-  { value: 'G2', label: '2º Grau (G2)' },
-  { value: 'SUP', label: 'Superior (SUP)' },
+  { value: 'JE',       label: 'Juizado Especial (JE)' },
+  { value: 'G1',       label: '1º Grau (G1)' },
+  { value: 'G2',       label: '2º Grau (G2)' },
+  { value: 'SUP',      label: 'Superior (SUP)' },
   { value: 'TURMA_REC', label: 'Turma Recursal' },
-];
-
-const POLOS = [
-  { value: '', label: 'Qualquer polo' },
-  { value: 'ATIVO', label: 'Polo Ativo (Autor)' },
-  { value: 'PASSIVO', label: 'Polo Passivo (Réu)' },
-  { value: 'TERCEIRO', label: 'Terceiro' },
 ];
 
 function Stars({ media }: { media: number | null }) {
@@ -206,23 +212,29 @@ function ProcessoCard({ p, autenticado }: { p: Processo; autenticado: boolean })
 
 // ── Consultar tab ─────────────────────────────────────────────────────────────
 
-type ModoBusca = 'numero' | 'cpf' | 'cnpj' | 'nomeParte' | 'nomeAdvogado';
-
 function ConsultarTab() {
-  const [modo, setModo] = useState<ModoBusca>('numero');
-  const [valor, setValor] = useState('');
-  const [tribunal, setTribunal] = useState('tjsc');
-  const [multiTribunal, setMultiTribunal] = useState(false);
+  const [numero, setNumero] = useState('');
+  const [tribunaisSel, setTribunaisSel] = useState<string[]>(['tjsc']);
   const [mostrarFiltros, setMostrarFiltros] = useState(false);
-  const [filtros, setFiltros] = useState({ classe: '', assunto: '', vara: '', grau: '', polo: '', dataInicio: '', dataFim: '' });
+  const [filtros, setFiltros] = useState({ classe: '', assunto: '', vara: '', grau: '', dataInicio: '', dataFim: '' });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [resultado, setResultado] = useState<Processo[] | null>(null);
+  const [resultado, setResultado] = useState<{ processos: Processo[]; porTribunal: Record<string, number> } | null>(null);
   const [historico, setHistorico] = useState<Processo[]>([]);
   const [loadingHist, setLoadingHist] = useState(true);
 
   function setFiltro<K extends keyof typeof filtros>(k: K, v: string) {
     setFiltros((f) => ({ ...f, [k]: v }));
+  }
+
+  function toggleTribunal(sigla: string) {
+    setTribunaisSel((prev) =>
+      prev.includes(sigla) ? prev.filter((t) => t !== sigla) : [...prev, sigla],
+    );
+  }
+
+  function toggleTodos(checked: boolean) {
+    setTribunaisSel(checked ? [...SIGLAS_ATIVAS] : ['tjsc']);
   }
 
   useEffect(() => {
@@ -235,31 +247,27 @@ function ConsultarTab() {
   async function handleBuscar(e: React.FormEvent) {
     e.preventDefault();
     const temFiltro = Object.values(filtros).some(Boolean);
-    if (!valor.trim() && !temFiltro) return;
+    if (!numero.trim() && !temFiltro) return;
     setLoading(true);
     setError(null);
     setResultado(null);
     try {
+      const multiTribunal = tribunaisSel.length > 1;
       const body: Record<string, unknown> = {
-        tribunal: multiTribunal ? 'tjsc' : tribunal,
+        tribunal: tribunaisSel[0] ?? 'tjsc',
         multiTribunal,
-        ...(filtros.classe    && { classe: filtros.classe }),
-        ...(filtros.assunto   && { assunto: filtros.assunto }),
-        ...(filtros.vara      && { vara: filtros.vara }),
-        ...(filtros.grau      && { grau: filtros.grau }),
-        ...(filtros.polo      && { polo: filtros.polo }),
+        ...(multiTribunal && { tribunais: tribunaisSel }),
+        ...(numero.trim() && { numero: numero.trim() }),
+        ...(filtros.classe     && { classe: filtros.classe }),
+        ...(filtros.assunto    && { assunto: filtros.assunto }),
+        ...(filtros.vara       && { vara: filtros.vara }),
+        ...(filtros.grau       && { grau: filtros.grau }),
         ...(filtros.dataInicio && { dataInicio: filtros.dataInicio }),
-        ...(filtros.dataFim   && { dataFim: filtros.dataFim }),
+        ...(filtros.dataFim    && { dataFim: filtros.dataFim }),
       };
-      const v = valor.trim();
-      if (modo === 'numero'        && v) body.numero       = v;
-      else if (modo === 'cpf'      && v) body.cpf          = v;
-      else if (modo === 'cnpj'     && v) body.cnpj         = v;
-      else if (modo === 'nomeParte'    && v) body.nomeParte    = v;
-      else if (modo === 'nomeAdvogado' && v) body.nomeAdvogado = v;
 
-      const data = await apiFetch<{ total: number; processos: Processo[] }>('/api/juridico/processos/consultar', { method: 'POST', body: JSON.stringify(body) });
-      setResultado(data.processos);
+      const data = await apiFetch<{ total: number; processos: Processo[]; porTribunal: Record<string, number> }>('/api/juridico/processos/consultar', { method: 'POST', body: JSON.stringify(body) });
+      setResultado({ processos: data.processos, porTribunal: data.porTribunal ?? {} });
       if (data.processos.length > 0) {
         setHistorico((prev) => {
           const novosIds = new Set(data.processos.map((p) => p.id));
@@ -273,73 +281,70 @@ function ConsultarTab() {
     }
   }
 
-  const modos: { key: ModoBusca; label: string; placeholder: string }[] = [
-    { key: 'numero',       label: 'Número CNJ',     placeholder: '0001234-12.2023.8.24.0001' },
-    { key: 'cpf',          label: 'CPF',             placeholder: '000.000.000-00' },
-    { key: 'cnpj',         label: 'CNPJ',            placeholder: '00.000.000/0001-00' },
-    { key: 'nomeParte',    label: 'Nome da Parte',   placeholder: 'Nome do cliente ou empresa' },
-    { key: 'nomeAdvogado', label: 'Nome/OAB Adv.',   placeholder: 'Nome do advogado' },
-  ];
-
-  const modoAtual = modos.find((m) => m.key === modo)!;
-
   const temFiltrosAtivos = Object.values(filtros).some(Boolean);
+  const todosAtivos = SIGLAS_ATIVAS.every((s) => tribunaisSel.includes(s));
 
   return (
     <div>
+      {/* Aviso sobre limitações do DataJud */}
+      <div style={{ padding: '.6rem .85rem', background: 'var(--color-gray-50)', borderRadius: 'var(--radius)', fontSize: '.78rem', color: 'var(--color-gray-500)', marginBottom: '.75rem', borderLeft: '3px solid var(--color-gray-200)' }}>
+        <strong>Busca disponível:</strong> número CNJ, classe, assunto, vara, grau e período.
+        Busca por nome ou CPF/CNPJ não está disponível no DataJud público (campo não indexado).
+      </div>
+
       <form onSubmit={handleBuscar}>
-        {/* Modo de busca */}
-        <div className="toggle-group" style={{ flexWrap: 'wrap', marginBottom: '.75rem' }}>
-          {modos.map((m) => (
-            <button key={m.key} type="button" className={modo === m.key ? 'active' : ''} onClick={() => { setModo(m.key); setValor(''); }}>
-              {m.label}
-            </button>
-          ))}
+        {/* Seleção de tribunais */}
+        <div style={{ marginBottom: '.75rem' }}>
+          <div style={{ fontSize: '.75rem', fontWeight: 600, color: 'var(--color-gray-500)', marginBottom: '.4rem' }}>TRIBUNAIS</div>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '.4rem', alignItems: 'center' }}>
+            <label style={{ display: 'flex', alignItems: 'center', gap: '.3rem', fontSize: '.78rem', cursor: 'pointer', padding: '.3rem .6rem', borderRadius: 'var(--radius)', background: todosAtivos ? 'var(--color-primary)' : 'var(--color-gray-100)', color: todosAtivos ? '#fff' : 'var(--color-gray-700)', fontWeight: 600 }}>
+              <input type="checkbox" style={{ display: 'none' }} checked={todosAtivos} onChange={(e) => toggleTodos(e.target.checked)} />
+              Todos
+            </label>
+            {TRIBUNAIS_CONFIG.map((t) => {
+              const sel = tribunaisSel.includes(t.sigla);
+              return (
+                <label key={t.sigla} title={t.nome} style={{ display: 'flex', alignItems: 'center', gap: '.3rem', fontSize: '.78rem', cursor: t.ativo ? 'pointer' : 'not-allowed', opacity: t.ativo ? 1 : .4, padding: '.3rem .6rem', borderRadius: 'var(--radius)', background: sel && t.ativo ? 'var(--color-primary)' : 'var(--color-gray-100)', color: sel && t.ativo ? '#fff' : 'var(--color-gray-700)', border: t.ativo ? 'none' : '1px dashed var(--color-gray-300)' }}>
+                  <input type="checkbox" style={{ display: 'none' }} checked={sel} disabled={!t.ativo} onChange={() => t.ativo && toggleTribunal(t.sigla)} />
+                  {t.sigla.toUpperCase()}
+                  {!t.ativo && ' ✗'}
+                </label>
+              );
+            })}
+          </div>
+          <p style={{ fontSize: '.7rem', color: 'var(--color-gray-400)', marginTop: '.3rem' }}>
+            STF, JFSC, JFPR e JFRS indisponíveis na API pública do DataJud (índices não encontrados).
+          </p>
         </div>
 
         {/* Barra principal */}
         <div className="search-bar">
           <input
-            value={valor}
-            onChange={(e) => setValor(e.target.value)}
-            placeholder={modoAtual.placeholder}
+            value={numero}
+            onChange={(e) => setNumero(e.target.value)}
+            placeholder="Número CNJ — Ex: 5001234-12.2024.8.24.0001"
           />
-          {!multiTribunal && (
-            <select className="tribunal-select" value={tribunal} onChange={(e) => setTribunal(e.target.value)}>
-              {TRIBUNAIS.map((t) => <option key={t} value={t}>{t.toUpperCase()}</option>)}
-            </select>
-          )}
           <button type="submit" className="btn btn-primary" disabled={loading}>
             {loading ? 'Buscando…' : 'Buscar'}
           </button>
         </div>
 
-        {/* Controles secundários */}
-        <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', marginTop: '.5rem', flexWrap: 'wrap' }}>
-          <label style={{ display: 'flex', alignItems: 'center', gap: '.35rem', fontSize: '.8rem', color: 'var(--color-gray-600)', cursor: 'pointer' }}>
-            <input type="checkbox" checked={multiTribunal} onChange={(e) => setMultiTribunal(e.target.checked)} />
-            Buscar em múltiplos tribunais (TJSC, TJSP, TJRJ, TJMG, TJRS, TJPR, TJBA, TJCE)
-          </label>
-          <button
-            type="button"
-            className={`btn btn-ghost btn-sm ${temFiltrosAtivos ? 'btn-active' : ''}`}
-            onClick={() => setMostrarFiltros(!mostrarFiltros)}
-            style={{ marginLeft: 'auto' }}
-          >
+        {/* Filtros avançados */}
+        <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '.4rem' }}>
+          <button type="button" className={`btn btn-ghost btn-sm`} onClick={() => setMostrarFiltros(!mostrarFiltros)}>
             {temFiltrosAtivos ? '● ' : ''}Filtros avançados {mostrarFiltros ? '▲' : '▼'}
           </button>
         </div>
 
-        {/* Filtros avançados */}
         {mostrarFiltros && (
-          <div style={{ marginTop: '.75rem', padding: '1rem', background: 'var(--color-gray-50)', borderRadius: 'var(--radius)', display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '.75rem' }}>
+          <div style={{ marginTop: '.5rem', padding: '1rem', background: 'var(--color-gray-50)', borderRadius: 'var(--radius)', display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(190px, 1fr))', gap: '.75rem' }}>
             <div className="form-group" style={{ margin: 0 }}>
               <label style={{ fontSize: '.75rem' }}>Classe processual</label>
-              <input value={filtros.classe} onChange={(e) => setFiltro('classe', e.target.value)} placeholder="Ex: Execução, Monitória" />
+              <input value={filtros.classe} onChange={(e) => setFiltro('classe', e.target.value)} placeholder="Ex: Execução" />
             </div>
             <div className="form-group" style={{ margin: 0 }}>
               <label style={{ fontSize: '.75rem' }}>Assunto</label>
-              <input value={filtros.assunto} onChange={(e) => setFiltro('assunto', e.target.value)} placeholder="Ex: Nota Promissória, Dano Moral" />
+              <input value={filtros.assunto} onChange={(e) => setFiltro('assunto', e.target.value)} placeholder="Ex: Nota Promissória" />
             </div>
             <div className="form-group" style={{ margin: 0 }}>
               <label style={{ fontSize: '.75rem' }}>Vara / Órgão julgador</label>
@@ -352,12 +357,6 @@ function ConsultarTab() {
               </select>
             </div>
             <div className="form-group" style={{ margin: 0 }}>
-              <label style={{ fontSize: '.75rem' }}>Polo da parte buscada</label>
-              <select value={filtros.polo} onChange={(e) => setFiltro('polo', e.target.value)}>
-                {POLOS.map((p) => <option key={p.value} value={p.value}>{p.label}</option>)}
-              </select>
-            </div>
-            <div className="form-group" style={{ margin: 0 }}>
               <label style={{ fontSize: '.75rem' }}>Ajuizamento — de</label>
               <input type="date" value={filtros.dataInicio} onChange={(e) => setFiltro('dataInicio', e.target.value)} />
             </div>
@@ -366,7 +365,7 @@ function ConsultarTab() {
               <input type="date" value={filtros.dataFim} onChange={(e) => setFiltro('dataFim', e.target.value)} />
             </div>
             <div style={{ display: 'flex', alignItems: 'flex-end' }}>
-              <button type="button" className="btn btn-ghost btn-sm" onClick={() => setFiltros({ classe: '', assunto: '', vara: '', grau: '', polo: '', dataInicio: '', dataFim: '' })}>
+              <button type="button" className="btn btn-ghost btn-sm" onClick={() => setFiltros({ classe: '', assunto: '', vara: '', grau: '', dataInicio: '', dataFim: '' })}>
                 Limpar filtros
               </button>
             </div>
@@ -378,10 +377,20 @@ function ConsultarTab() {
 
       {resultado !== null && (
         <div style={{ marginBottom: '1.5rem' }}>
-          <div className="section-title">Resultado da Consulta ({resultado.length} encontrado{resultado.length !== 1 ? 's' : ''})</div>
-          {resultado.length === 0
+          {/* Contador por tribunal */}
+          {Object.keys(resultado.porTribunal).length > 0 && (
+            <div style={{ display: 'flex', gap: '.5rem', flexWrap: 'wrap', marginBottom: '.75rem' }}>
+              {Object.entries(resultado.porTribunal).map(([t, n]) => (
+                <span key={t} className="badge badge-area">{t}: {n}</span>
+              ))}
+            </div>
+          )}
+          <div className="section-title">
+            Resultado ({resultado.processos.length} encontrado{resultado.processos.length !== 1 ? 's' : ''})
+          </div>
+          {resultado.processos.length === 0
             ? <div className="empty-state"><p>Nenhum processo encontrado para os critérios informados.</p></div>
-            : resultado.map((p) => <ProcessoCard key={p.id} p={p} autenticado />)
+            : resultado.processos.map((p) => <ProcessoCard key={p.id} p={p} autenticado />)
           }
         </div>
       )}

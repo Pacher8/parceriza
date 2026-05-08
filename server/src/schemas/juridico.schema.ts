@@ -2,40 +2,21 @@ import { z } from 'zod';
 
 // ── Processos ─────────────────────────────────────────────────────────────────
 
+// Nota: campo "partes" não está indexado no DataJud — busca por nome/CPF
+// não é suportada. Tribunais ativos: tjsc, trf4, stj.
 export const consultarProcessoSchema = z.object({
-  // Identificadores diretos
   numero:        z.string().max(50).optional().nullable(),
-  cpf:           z.string().max(14).optional().nullable(),
-  cnpj:          z.string().max(18).optional().nullable(),
-  // Busca textual
-  nomeParte:     z.string().max(200).optional().nullable(),
-  nomeAdvogado:  z.string().max(200).optional().nullable(),
-  // Filtros processuais
   classe:        z.string().max(150).optional().nullable(),
   assunto:       z.string().max(150).optional().nullable(),
   vara:          z.string().max(200).optional().nullable(),
   grau:          z.enum(['JE', 'G1', 'G2', 'SUP', 'TURMA_REC']).optional().nullable(),
-  polo:          z.enum(['ATIVO', 'PASSIVO', 'TERCEIRO']).optional().nullable(),
-  // Período de ajuizamento
-  dataInicio:    z.string().max(10).optional().nullable(), // YYYY-MM-DD
+  dataInicio:    z.string().max(10).optional().nullable(),
   dataFim:       z.string().max(10).optional().nullable(),
-  // Tribunal
   tribunal:      z.string().max(10).optional().nullable().default('tjsc'),
   multiTribunal: z.boolean().optional().default(false),
+  tribunais:     z.array(z.string().max(10)).optional().nullable(),
 }).refine(
-  (d) =>
-    d.numero     ||
-    d.cpf        ||
-    d.cnpj       ||
-    d.nomeParte  ||
-    d.nomeAdvogado ||
-    d.classe     ||
-    d.assunto    ||
-    d.vara       ||
-    d.grau       ||
-    d.polo       ||
-    d.dataInicio ||
-    d.dataFim,
+  (d) => d.numero || d.classe || d.assunto || d.vara || d.grau || d.dataInicio || d.dataFim || d.multiTribunal,
   { message: 'Informe pelo menos um critério de busca' },
 );
 export type ConsultarProcessoInput = z.infer<typeof consultarProcessoSchema>;
