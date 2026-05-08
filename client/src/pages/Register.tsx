@@ -16,6 +16,7 @@ export function Register() {
     oab: '', oabUf: '' as typeof UF_LIST[number] | '',
     telefone: '',
   });
+  const [termos, setTermos] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -70,7 +71,7 @@ export function Register() {
     <>
       <NavBar />
       <div className="login-card" style={{ maxWidth: 480 }}>
-        <h2>Criar conta</h2>
+        <h2>Cadastro</h2>
         <p style={{ fontSize: '.875rem', color: 'var(--color-gray-500)', marginBottom: '1.25rem' }}>
           Plataforma exclusiva para advogados. Tenha seu número OAB em mãos.
         </p>
@@ -165,13 +166,29 @@ export function Register() {
             />
           </div>
 
+          <label style={{ display: 'flex', alignItems: 'flex-start', gap: '.5rem', margin: '1rem 0 .75rem', fontSize: '.875rem', color: 'var(--color-gray-600)', cursor: 'pointer' }}>
+            <input
+              type="checkbox"
+              checked={termos}
+              onChange={(e) => setTermos(e.target.checked)}
+              style={{ marginTop: '.15rem', flexShrink: 0 }}
+              required
+            />
+            <span>
+              Li e aceito os{' '}
+              <Link to="/termos" target="_blank" style={{ color: 'var(--color-primary)', fontWeight: 600 }}>Termos de Uso</Link>
+              {' '}e a{' '}
+              <Link to="/privacidade" target="_blank" style={{ color: 'var(--color-primary)', fontWeight: 600 }}>Política de Privacidade</Link>
+            </span>
+          </label>
+
           <button
             type="submit"
             className="btn btn-primary"
-            style={{ width: '100%', marginTop: '.25rem' }}
-            disabled={loading}
+            style={{ width: '100%' }}
+            disabled={loading || !termos}
           >
-            {loading ? 'Criando conta…' : 'Criar conta grátis'}
+            {loading ? 'Criando conta…' : 'Criar Conta'}
           </button>
         </form>
 
