@@ -1,3 +1,4 @@
+import { Prisma } from '@prisma/client';
 import { prisma } from '../lib/prisma.js';
 import { HttpError } from '../middlewares/error.middleware.js';
 import type { CriarLeadInput, FecharLeadInput } from '../schemas/marketplace.schema.js';
@@ -113,7 +114,7 @@ export async function fecharLead(leadId: string, advogadoId: string, data: Fecha
   if (!isCaptor && !isMatch) throw new HttpError(403, 'Sem permissão para fechar este lead');
 
   // Incrementa totalFechados na oferta do advogado que fez match
-  const updates: Promise<unknown>[] = [
+  const updates: Prisma.PrismaPromise<unknown>[] = [
     prisma.lead.update({
       where: { id: leadId },
       data: { status: 'FECHADO', comissaoAcordada: data.comissaoAcordada },

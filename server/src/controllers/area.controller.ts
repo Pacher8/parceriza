@@ -14,7 +14,7 @@ export const listAreas: RequestHandler = async (_req, res, next) => {
 export const listJobsByArea: RequestHandler = async (req, res, next) => {
   try {
     const query = listJobsQuerySchema.parse(req.query);
-    const jobs = await areaService.listJobsByArea(req.params['slug']!, query);
+    const jobs = await areaService.listJobsByArea(req.params['slug'] as string, query);
     res.json({ jobs });
   } catch (err) {
     next(err);

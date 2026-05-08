@@ -32,7 +32,7 @@ export const leadsDisponiveis: RequestHandler = async (req, res, next) => {
 
 export const aceitarMatch: RequestHandler = async (req, res, next) => {
   try {
-    const lead = await leadService.aceitarMatch(req.params['id']!, req.advogadoId!);
+    const lead = await leadService.aceitarMatch(req.params['id'] as string, req.advogadoId!);
     res.json({ lead });
   } catch (err) {
     next(err);
@@ -42,7 +42,7 @@ export const aceitarMatch: RequestHandler = async (req, res, next) => {
 export const fecharLead: RequestHandler = async (req, res, next) => {
   try {
     const data = fecharLeadSchema.parse(req.body);
-    const lead = await leadService.fecharLead(req.params['id']!, req.advogadoId!, data);
+    const lead = await leadService.fecharLead(req.params['id'] as string, req.advogadoId!, data);
     res.json({ lead });
   } catch (err) {
     next(err);

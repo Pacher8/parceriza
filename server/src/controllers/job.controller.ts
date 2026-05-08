@@ -14,7 +14,7 @@ export const listJobs: RequestHandler = async (req, res, next) => {
 
 export const getJob: RequestHandler = async (req, res, next) => {
   try {
-    const job = await jobService.getJob(req.params['id']!);
+    const job = await jobService.getJob(req.params['id'] as string);
     res.json({ job });
   } catch (err) {
     next(err);
