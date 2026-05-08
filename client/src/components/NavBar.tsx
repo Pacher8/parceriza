@@ -21,7 +21,7 @@ export function NavBar({ onLogout, refreshKey = 0 }: NavBarProps) {
 
   return (
     <nav className="nav">
-      <Link to="/" className="nav-brand">Parceriza</Link>
+      <Link to="/" className="nav-brand">PARCERIZA</Link>
       <Link to="/jobs" className="nav-link">Marketplace</Link>
       <Link to="/agente" className="nav-link">Meu Agente</Link>
       <Link to="/juridico" className="nav-link">Jurídico</Link>

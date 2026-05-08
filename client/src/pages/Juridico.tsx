@@ -624,7 +624,7 @@ function CriarEspecialistaModal({ onClose, onCriado }: { onClose: () => void; on
     setCriando(true);
     try {
       await apiFetch('/api/juridico/especialistas', { method: 'POST', body: JSON.stringify(form) });
-      alert('Agente criado! Aguarda aprovação da curadoria Parceriza.');
+      alert('Agente criado! Aguarda aprovação da curadoria PARCERIZA.');
       onCriado();
       onClose();
     } catch (err) {

@@ -84,7 +84,7 @@ export function Home() {
         </div>
         <div className="como-funciona-grid">
           {[
-            { num: '1', icon: '📝', titulo: 'Crie seu perfil', desc: 'Cadastre-se, configure seu agente IA e publique seus serviços na vitrine Parceriza.' },
+            { num: '1', icon: '📝', titulo: 'Crie seu perfil', desc: 'Cadastre-se, configure seu agente IA e publique seus serviços na vitrine PARCERIZA.' },
             { num: '2', icon: '🔗', titulo: 'Conecte-se', desc: 'Encontre oportunidades no marketplace, estabeleça parcerias e capte leads qualificados.' },
             { num: '3', icon: '💰', titulo: 'Cresça', desc: 'Gerencie cobranças, monitore processos e automatize o atendimento com inteligência artificial.' },
           ].map((p) => (
@@ -147,20 +147,20 @@ export function Home() {
       {/* CTA Final */}
       <section style={{ background: 'var(--color-primary)', padding: '4rem 1.25rem', textAlign: 'center' }}>
         <h2 style={{ color: '#fff', fontSize: '2rem', fontWeight: 800, margin: '0 0 .75rem' }}>Pronto para começar?</h2>
-        <p style={{ color: 'rgba(255,255,255,.8)', fontSize: '1rem', marginBottom: '1.5rem' }}>Junte-se a centenas de advogados que já automatizaram seu escritório com a Parceriza.</p>
+        <p style={{ color: 'rgba(255,255,255,.8)', fontSize: '1rem', marginBottom: '1.5rem' }}>Junte-se a centenas de advogados que já automatizaram seu escritório com a PARCERIZA.</p>
         <Link to="/register" className="btn btn-white" style={{ padding: '.75rem 2.5rem', fontSize: '1rem' }}>Criar minha conta grátis →</Link>
       </section>
 
       {/* Footer */}
       <footer className="home-footer">
         <div>
-          <Link to="/">Parceriza</Link>
+          <Link to="/">PARCERIZA</Link>
           <Link to="/jobs">Marketplace</Link>
           <Link to="/juridico">Jurídico</Link>
           <Link to="/conquistas">Conquistas</Link>
           <Link to="/tokens">Tokens</Link>
         </div>
-        <p>© {new Date().getFullYear()} Parceriza — Plataforma Jurídica Digital. Todos os direitos reservados.</p>
+        <p>© {new Date().getFullYear()} PARCERIZA — Plataforma Jurídica Digital. Todos os direitos reservados.</p>
       </footer>
     </div>
   );

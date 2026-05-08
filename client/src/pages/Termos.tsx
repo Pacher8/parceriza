@@ -14,11 +14,11 @@ export function Termos() {
         <div style={{ lineHeight: 1.8, color: 'var(--color-gray-700)', fontSize: '.9375rem' }}>
 
           <Section title="1. Aceitação dos Termos">
-            <p>Ao criar uma conta ou utilizar a plataforma Parceriza, você declara que leu, compreendeu e concorda com estes Termos de Uso e com a nossa <Link to="/privacidade" style={{ color: 'var(--color-primary)' }}>Política de Privacidade</Link>. Se não concordar com qualquer disposição, não utilize a plataforma.</p>
+            <p>Ao criar uma conta ou utilizar a plataforma PARCERIZA, você declara que leu, compreendeu e concorda com estes Termos de Uso e com a nossa <Link to="/privacidade" style={{ color: 'var(--color-primary)' }}>Política de Privacidade</Link>. Se não concordar com qualquer disposição, não utilize a plataforma.</p>
           </Section>
 
           <Section title="2. Descrição da Plataforma">
-            <p>A Parceriza é uma plataforma digital B2B voltada exclusivamente a advogados regularmente inscritos na Ordem dos Advogados do Brasil (OAB). A plataforma oferece:</p>
+            <p>A PARCERIZA é uma plataforma digital B2B voltada exclusivamente a advogados regularmente inscritos na Ordem dos Advogados do Brasil (OAB). A plataforma oferece:</p>
             <ul>
               <li>Marketplace de JOBs jurídicos para parcerias entre advogados;</li>
               <li>Agente de Inteligência Artificial para atendimento e automatização;</li>
@@ -30,14 +30,14 @@ export function Termos() {
           </Section>
 
           <Section title="3. Elegibilidade e Cadastro">
-            <p>Para utilizar a Parceriza, o usuário deve:</p>
+            <p>Para utilizar a PARCERIZA, o usuário deve:</p>
             <ul>
               <li>Ser advogado inscrito na OAB, com inscrição ativa;</li>
               <li>Fornecer informações verdadeiras, precisas e atualizadas no cadastro;</li>
               <li>Ter capacidade civil plena para celebrar contratos;</li>
               <li>Manter a confidencialidade de suas credenciais de acesso.</li>
             </ul>
-            <p>A Parceriza se reserva o direito de suspender ou encerrar contas que violem estes Termos ou apresentem informações falsas.</p>
+            <p>A PARCERIZA se reserva o direito de suspender ou encerrar contas que violem estes Termos ou apresentem informações falsas.</p>
           </Section>
 
           <Section title="4. Condutas Permitidas e Proibidas">
@@ -52,14 +52,14 @@ export function Termos() {
             </ul>
           </Section>
 
-          <Section title="5. Tokens PCT (Parceriza Token)">
+          <Section title="5. Tokens PCT (PARCERIZA Token)">
             <p>Os tokens PCT são créditos digitais de engajamento interno, sem valor monetário legal. Podem ser obtidos por meio de ações na plataforma (onboarding, avaliações, indicações, serviços) e utilizados para acesso a funcionalidades premium, anúncios e serviços paralegais.</p>
             <p>Os tokens não são transferíveis para terceiros fora da plataforma, não constituem moeda ou ativo financeiro e podem ser ajustados, suspensos ou descontinuados mediante aviso prévio de 30 dias.</p>
           </Section>
 
           <Section title="6. Marketplace de JOBs e Parcerias">
-            <p>A Parceriza atua como intermediária tecnológica entre advogados, não sendo parte nas parcerias ou contratos celebrados. Cabe exclusivamente aos advogados envolvidos negociar, formalizar e executar os acordos de parceria, honorários e comissões, em conformidade com o Estatuto da OAB e legislação aplicável.</p>
-            <p>A Parceriza não se responsabiliza por inadimplemento, desentendimentos ou litígios entre os usuários decorrentes de parcerias formadas na plataforma.</p>
+            <p>A PARCERIZA atua como intermediária tecnológica entre advogados, não sendo parte nas parcerias ou contratos celebrados. Cabe exclusivamente aos advogados envolvidos negociar, formalizar e executar os acordos de parceria, honorários e comissões, em conformidade com o Estatuto da OAB e legislação aplicável.</p>
+            <p>A PARCERIZA não se responsabiliza por inadimplemento, desentendimentos ou litígios entre os usuários decorrentes de parcerias formadas na plataforma.</p>
           </Section>
 
           <Section title="7. Inteligência Artificial">
@@ -68,7 +68,7 @@ export function Termos() {
           </Section>
 
           <Section title="8. Proteção de Dados (LGPD)">
-            <p>A Parceriza trata dados pessoais em conformidade com a Lei nº 13.709/2018 (Lei Geral de Proteção de Dados — LGPD). Os dados coletados são, em sua maioria, <strong>informações públicas disponíveis na internet</strong>, como nome completo, número de inscrição na OAB e estado de inscrição originária, que são dados de acesso público nos cadastros da OAB.</p>
+            <p>A PARCERIZA trata dados pessoais em conformidade com a Lei nº 13.709/2018 (Lei Geral de Proteção de Dados — LGPD). Os dados coletados são, em sua maioria, <strong>informações públicas disponíveis na internet</strong>, como nome completo, número de inscrição na OAB e estado de inscrição originária, que são dados de acesso público nos cadastros da OAB.</p>
             <p>Dados adicionais fornecidos voluntariamente (e-mail, telefone, áreas de atuação, teses) são tratados com base no consentimento do titular e na execução do contrato de prestação de serviços.</p>
             <p><strong>Não compartilhamos dados pessoais com terceiros</strong> sem o consentimento prévio do titular, exceto quando exigido por lei ou ordem judicial.</p>
             <p>Para detalhes completos sobre coleta, finalidade, base legal e retenção de dados, consulte nossa <Link to="/privacidade" style={{ color: 'var(--color-primary)' }}>Política de Privacidade</Link>.</p>
@@ -85,22 +85,22 @@ export function Termos() {
           </Section>
 
           <Section title="9. Propriedade Intelectual">
-            <p>Todo o conteúdo da plataforma (marca, software, layout, textos, imagens, base de dados) é de propriedade da Parceriza ou licenciado por terceiros. É vedada a reprodução, distribuição ou uso comercial sem autorização prévia e expressa.</p>
-            <p>O usuário mantém a propriedade intelectual sobre o conteúdo que inserir na plataforma (perfil, teses, serviços), concedendo à Parceriza licença não exclusiva para exibi-lo aos demais usuários conforme o funcionamento da plataforma.</p>
+            <p>Todo o conteúdo da plataforma (marca, software, layout, textos, imagens, base de dados) é de propriedade da PARCERIZA ou licenciado por terceiros. É vedada a reprodução, distribuição ou uso comercial sem autorização prévia e expressa.</p>
+            <p>O usuário mantém a propriedade intelectual sobre o conteúdo que inserir na plataforma (perfil, teses, serviços), concedendo à PARCERIZA licença não exclusiva para exibi-lo aos demais usuários conforme o funcionamento da plataforma.</p>
           </Section>
 
           <Section title="10. Responsabilidade Limitada">
-            <p>A Parceriza não garante que a plataforma estará disponível de forma ininterrupta ou livre de erros. A plataforma é fornecida "no estado em que se encontra", sem garantias de qualquer natureza, expressas ou implícitas.</p>
-            <p>Em nenhuma hipótese a Parceriza será responsável por danos indiretos, lucros cessantes, perda de dados ou qualquer outro dano consequencial decorrente do uso ou impossibilidade de uso da plataforma, mesmo que alertada da possibilidade de tais danos.</p>
-            <p>A responsabilidade total da Parceriza perante o usuário, em qualquer circunstância, fica limitada ao valor pago pelo usuário à plataforma nos últimos 12 (doze) meses.</p>
+            <p>A PARCERIZA não garante que a plataforma estará disponível de forma ininterrupta ou livre de erros. A plataforma é fornecida "no estado em que se encontra", sem garantias de qualquer natureza, expressas ou implícitas.</p>
+            <p>Em nenhuma hipótese a PARCERIZA será responsável por danos indiretos, lucros cessantes, perda de dados ou qualquer outro dano consequencial decorrente do uso ou impossibilidade de uso da plataforma, mesmo que alertada da possibilidade de tais danos.</p>
+            <p>A responsabilidade total da PARCERIZA perante o usuário, em qualquer circunstância, fica limitada ao valor pago pelo usuário à plataforma nos últimos 12 (doze) meses.</p>
           </Section>
 
           <Section title="11. Modificações dos Termos">
-            <p>A Parceriza pode atualizar estes Termos a qualquer momento. Alterações materiais serão comunicadas com antecedência mínima de 15 dias por e-mail ou notificação na plataforma. O uso continuado após a vigência das alterações implica aceitação dos novos termos.</p>
+            <p>A PARCERIZA pode atualizar estes Termos a qualquer momento. Alterações materiais serão comunicadas com antecedência mínima de 15 dias por e-mail ou notificação na plataforma. O uso continuado após a vigência das alterações implica aceitação dos novos termos.</p>
           </Section>
 
           <Section title="12. Rescisão">
-            <p>O usuário pode encerrar sua conta a qualquer momento mediante solicitação ao suporte. A Parceriza pode suspender ou encerrar o acesso do usuário imediatamente, sem aviso prévio, em caso de violação grave destes Termos ou do Código de Ética da OAB.</p>
+            <p>O usuário pode encerrar sua conta a qualquer momento mediante solicitação ao suporte. A PARCERIZA pode suspender ou encerrar o acesso do usuário imediatamente, sem aviso prévio, em caso de violação grave destes Termos ou do Código de Ética da OAB.</p>
           </Section>
 
           <Section title="13. Foro e Legislação Aplicável">

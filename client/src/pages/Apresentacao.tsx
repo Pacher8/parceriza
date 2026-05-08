@@ -188,7 +188,7 @@ export function Apresentacao() {
             <li>Bio e áreas de atuação</li>
             <li>Lista de serviços oferecidos com valores</li>
             <li>Informações de contato</li>
-            <li>Design profissional com identidade Parceriza</li>
+            <li>Design profissional com identidade PARCERIZA</li>
           </ul>
         </div>
       </div>

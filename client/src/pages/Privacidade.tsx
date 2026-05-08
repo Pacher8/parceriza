@@ -14,7 +14,7 @@ export function Privacidade() {
         <div style={{ lineHeight: 1.8, color: 'var(--color-gray-700)', fontSize: '.9375rem' }}>
 
           <Section title="1. Quem Somos (Controlador)">
-            <p>A <strong>Parceriza</strong> é uma plataforma operada pela <strong>PREDDITA LTDA.</strong>, inscrita no CNPJ sob o nº 46.108.670/0001-27, com sede em Jaraguá do Sul — SC, controladora dos dados pessoais tratados nesta plataforma, nos termos da Lei nº 13.709/2018 (LGPD).</p>
+            <p>A <strong>PARCERIZA</strong> é uma plataforma operada pela <strong>PREDDITA LTDA.</strong>, inscrita no CNPJ sob o nº 46.108.670/0001-27, com sede em Jaraguá do Sul — SC, controladora dos dados pessoais tratados nesta plataforma, nos termos da Lei nº 13.709/2018 (LGPD).</p>
             <p>Encarregado de Dados (DPO): <a href="mailto:privacidade@parceriza.com.br" style={{ color: 'var(--color-primary)' }}>privacidade@parceriza.com.br</a></p>
           </Section>
 
@@ -58,7 +58,7 @@ export function Privacidade() {
 
           <Section title="7. Transferência Internacional de Dados">
             <p>Ao utilizar a IA (Anthropic), dados de conversação podem ser processados em servidores nos Estados Unidos. A Anthropic adere ao Data Privacy Framework e às cláusulas contratuais padrão aprovadas pela Comissão Europeia, garantindo nível de proteção equivalente à LGPD.</p>
-            <p>A Parceriza configura o uso da API Anthropic com <strong>Zero Data Retention (ZDR)</strong> para dados sensíveis de clientes, impedindo que as mensagens sejam utilizadas para treinamento de modelos.</p>
+            <p>A PARCERIZA configura o uso da API Anthropic com <strong>Zero Data Retention (ZDR)</strong> para dados sensíveis de clientes, impedindo que as mensagens sejam utilizadas para treinamento de modelos.</p>
           </Section>
 
           <Section title="8. Prazo de Retenção">
@@ -98,7 +98,7 @@ export function Privacidade() {
           <Section title="12. Contato e DPO">
             <p>Para dúvidas, exercício de direitos ou reclamações relacionadas ao tratamento de dados pessoais:</p>
             <p>
-              <strong>Encarregado de Dados (DPO) — Parceriza</strong><br />
+              <strong>Encarregado de Dados (DPO) — PARCERIZA</strong><br />
               E-mail: <a href="mailto:privacidade@parceriza.com.br" style={{ color: 'var(--color-primary)' }}>privacidade@parceriza.com.br</a><br />
               Você também pode registrar reclamação junto à Autoridade Nacional de Proteção de Dados (ANPD): <a href="https://www.gov.br/anpd" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--color-primary)' }}>www.gov.br/anpd</a>
             </p>
