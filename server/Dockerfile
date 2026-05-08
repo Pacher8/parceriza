@@ -7,6 +7,7 @@ RUN npm ci
 
 FROM node:20-alpine AS build
 WORKDIR /app
+RUN apk add --no-cache openssl
 COPY --from=deps /app/node_modules ./node_modules
 COPY server/ ./server/
 RUN cd server && npx prisma generate && npm run build
@@ -15,6 +16,7 @@ FROM node:20-alpine AS runtime
 # node_modules são hoisted para /app pelo npm workspaces
 WORKDIR /app/server
 ENV NODE_ENV=production
+RUN apk add --no-cache openssl
 COPY --from=build /app/node_modules /app/node_modules
 COPY --from=build /app/server/dist ./dist
 COPY --from=build /app/server/prisma ./prisma
