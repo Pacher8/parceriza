@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { NavBar } from '../components/NavBar';
-import { apiFetch, setToken } from '../lib/api';
+import { apiFetch, setToken, ApiError } from '../lib/api';
 
 const UF_LIST = [
   'AC','AL','AP','AM','BA','CE','DF','ES','GO','MA',
@@ -18,6 +18,7 @@ export function Register() {
   });
   const [termos, setTermos] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [emailDuplicado, setEmailDuplicado] = useState(false);
   const [loading, setLoading] = useState(false);
 
   function set<K extends keyof typeof form>(k: K, v: (typeof form)[K]) {
@@ -46,6 +47,7 @@ export function Register() {
     }
 
     setLoading(true);
+    setEmailDuplicado(false);
     try {
       const data = await apiFetch<{ token: string }>('/api/auth/register', {
         method: 'POST',
@@ -61,7 +63,18 @@ export function Register() {
       setToken(data.token);
       navigate('/agente');
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erro ao criar conta');
+      if (err instanceof ApiError) {
+        if (err.status === 409 && err.message.toLowerCase().includes('e-mail')) {
+          setEmailDuplicado(true);
+          setError(null);
+        } else if (err.status === 409 && err.message.toLowerCase().includes('oab')) {
+          setError('Este número de OAB já está cadastrado nesta UF.');
+        } else {
+          setError(err.message);
+        }
+      } else {
+        setError('Erro ao criar conta. Tente novamente.');
+      }
     } finally {
       setLoading(false);
     }
@@ -76,6 +89,18 @@ export function Register() {
           Plataforma exclusiva para advogados. Tenha seu número OAB em mãos.
         </p>
 
+        {emailDuplicado && (
+          <div className="error-msg">
+            Este e-mail já está cadastrado.{' '}
+            <Link to="/forgot-password" style={{ color: 'inherit', fontWeight: 700, textDecoration: 'underline' }}>
+              Recuperar senha
+            </Link>
+            {' '}ou{' '}
+            <Link to="/agente" style={{ color: 'inherit', fontWeight: 700, textDecoration: 'underline' }}>
+              Entrar
+            </Link>
+          </div>
+        )}
         {error && <div className="error-msg">{error}</div>}
 
         <form onSubmit={handleSubmit}>
