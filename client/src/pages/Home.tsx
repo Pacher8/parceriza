@@ -84,7 +84,7 @@ export function Home() {
         </div>
         <div className="como-funciona-grid">
           {[
-            { num: '1', icon: '📝', titulo: 'Crie seu perfil', desc: 'Cadastre-se, configure seu agente IA e publique seus serviços na vitrine PARCERIZA.' },
+            { num: '1', icon: '📝', titulo: 'Crie seu perfil', desc: 'Cadastre-se, configure seu agente IA e publique seus serviços na vitrine ParcerIzA.' },
             { num: '2', icon: '🔗', titulo: 'Conecte-se', desc: 'Encontre oportunidades no marketplace, estabeleça parcerias e capte leads qualificados.' },
             { num: '3', icon: '💰', titulo: 'Cresça', desc: 'Gerencie cobranças, monitore processos e automatize o atendimento com inteligência artificial.' },
           ].map((p) => (
@@ -144,10 +144,72 @@ export function Home() {
         </section>
       )}
 
+      {/* Ecossistema Preddita */}
+      <section className="ecosistema-section">
+        <div className="section-header">
+          <h2>Ecossistema Preddita</h2>
+          <p>Soluções jurídicas com inteligência artificial — tudo integrado na ParcerIzA</p>
+        </div>
+        <div className="ecosistema-grid">
+          {/* JOBs Jurídicos */}
+          <Link to="/jobs" className="ecosistema-card">
+            <div className="ecosistema-icon" style={{ background: '#d1fae5' }}>⚖️</div>
+            <div className="ecosistema-title">JOBs Jurídicos</div>
+            <div className="ecosistema-desc">Marketplace B2B de serviços jurídicos entre advogados e departamentos jurídicos</div>
+            <div className="ecosistema-footer">
+              <span className="badge" style={{ background: '#d1fae5', color: '#065f46' }}>Disponível</span>
+              <span className="btn btn-sm btn-outline">Explorar →</span>
+            </div>
+          </Link>
+
+          {/* Tributár.IA */}
+          <Link to="/tributaria" className="ecosistema-card">
+            <div className="ecosistema-icon" style={{ background: '#dbeafe' }}>📊</div>
+            <div className="ecosistema-title">Tributár.IA</div>
+            <div className="ecosistema-desc">Teses tributárias, análise de processos fiscais e recuperação de créditos com IA</div>
+            <div className="ecosistema-footer">
+              <span className="badge badge-blue">Disponível</span>
+              <span className="btn btn-sm" style={{ background: '#1d4ed8', color: '#fff', border: 'none' }}>Acessar →</span>
+            </div>
+          </Link>
+
+          {/* Penal.IA */}
+          <div className="ecosistema-card disabled">
+            <div className="ecosistema-icon" style={{ background: '#ede9fe' }}>🛡️</div>
+            <div className="ecosistema-title">Penal.IA</div>
+            <div className="ecosistema-desc">Análise de processos crime, estratégias penais e defesa com inteligência artificial</div>
+            <div className="ecosistema-footer">
+              <span className="badge badge-gray-sm">Em breve</span>
+            </div>
+          </div>
+
+          {/* Trabalhista.IA */}
+          <div className="ecosistema-card disabled">
+            <div className="ecosistema-icon" style={{ background: '#fef3c7' }}>👥</div>
+            <div className="ecosistema-title">Trabalhista.IA</div>
+            <div className="ecosistema-desc">Análise trabalhista, cálculos de verbas rescisórias e estratégias com IA</div>
+            <div className="ecosistema-footer">
+              <span className="badge badge-gray-sm">Em breve</span>
+            </div>
+          </div>
+
+          {/* Integre */}
+          <a href="mailto:contato@preddita.com.br" className="ecosistema-card">
+            <div className="ecosistema-icon" style={{ background: '#fff7ed' }}>🔌</div>
+            <div className="ecosistema-title">Integre sua solução</div>
+            <div className="ecosistema-desc">Parceiros externos podem integrar soluções jurídicas ao hub da Preddita via API</div>
+            <div className="ecosistema-footer">
+              <span className="badge badge-orange-sm">API aberta</span>
+              <span className="btn btn-sm btn-accent">Saiba mais →</span>
+            </div>
+          </a>
+        </div>
+      </section>
+
       {/* CTA Final */}
       <section style={{ background: 'var(--color-primary-dark)', padding: '5rem 1.25rem', textAlign: 'center' }}>
         <h2 style={{ color: '#fff', fontSize: '2rem', fontWeight: 700, margin: '0 0 .75rem', letterSpacing: '-0.02em' }}>Pronto para começar?</h2>
-        <p style={{ color: 'rgba(255,255,255,.8)', fontSize: '1rem', marginBottom: '1.75rem' }}>Junte-se a centenas de advogados que já automatizaram seu escritório com a PARCERIZA.</p>
+        <p style={{ color: 'rgba(255,255,255,.8)', fontSize: '1rem', marginBottom: '1.75rem' }}>Junte-se a centenas de advogados que já automatizaram seu escritório com a ParcerIzA.</p>
         <Link to="/register" className="btn btn-white" style={{ padding: '.85rem 2.5rem', fontSize: '1rem' }}>Criar minha conta grátis →</Link>
       </section>
 
