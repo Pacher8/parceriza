@@ -199,7 +199,7 @@ export function Tributaria() {
         <div>
           <Link to="/">Parcer<span style={{ color: '#f97316' }}>I</span>z<span style={{ color: '#f97316' }}>A</span></Link>
           <Link to="/jobs">Marketplace</Link>
-          <Link to="/tributaria">Tributár.IA</Link>
+          <Link to="/tributaria">Tributar.IA</Link>
           <Link to="/juridico">Jurídico</Link>
         </div>
         <p>© {new Date().getFullYear()} ParcerIzA · Preddita — Plataforma Jurídica Digital</p>

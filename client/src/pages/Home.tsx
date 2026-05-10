@@ -162,10 +162,10 @@ export function Home() {
             </div>
           </Link>
 
-          {/* Tributár.IA */}
+          {/* Tributar.IA */}
           <Link to="/tributaria" className="ecosistema-card">
             <div className="ecosistema-icon" style={{ background: '#dbeafe' }}>📊</div>
-            <div className="ecosistema-title">Tributár.IA</div>
+            <div className="ecosistema-title">Tributar.IA</div>
             <div className="ecosistema-desc">Teses tributárias, análise de processos fiscais e recuperação de créditos com IA</div>
             <div className="ecosistema-footer">
               <span className="badge badge-blue">Disponível</span>

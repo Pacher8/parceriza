@@ -41,7 +41,7 @@ export function NavBar({ onLogout, refreshKey = 0 }: NavBarProps) {
           </Link>
           <Link to="/tributaria" className="nav-dropdown-item">
             <span className="nav-dropdown-icon">📊</span>
-            <span className="nav-dropdown-label">Tributár.IA</span>
+            <span className="nav-dropdown-label">Tributar.IA</span>
             <span className="badge badge-blue" style={{ fontSize: '.68rem' }}>Disponível</span>
           </Link>
           <span className="nav-dropdown-item disabled">
@@ -75,7 +75,7 @@ export function NavBar({ onLogout, refreshKey = 0 }: NavBarProps) {
       <span className="nav-mobile-section">Soluções</span>
       <Link to="/jobs" className="nav-link nav-link-sub" onClick={close}>⚖️ JOBs Jurídicos</Link>
       <Link to="/tributaria" className="nav-link nav-link-sub" onClick={close}>
-        📊 Tributár.IA <span className="badge badge-blue" style={{ fontSize: '.65rem', marginLeft: '.3rem' }}>Disponível</span>
+        📊 Tributar.IA <span className="badge badge-blue" style={{ fontSize: '.65rem', marginLeft: '.3rem' }}>Disponível</span>
       </Link>
       <span className="nav-link nav-link-sub disabled">
         🛡️ Penal.IA <span className="badge badge-gray-sm" style={{ fontSize: '.65rem', marginLeft: '.3rem' }}>Em breve</span>
