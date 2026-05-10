@@ -15,7 +15,7 @@ type Parceiro = { id: string; nome: string; logoUrl: string | null; descricao: s
 type Regra = { id: string; tipo: string; titulo: string; descricao: string | null; tokensRecompensa: number; totalUsado: number };
 
 function celebrar() {
-  confetti({ particleCount: 180, spread: 100, origin: { y: 0.55 }, colors: ['#1d4ed8', '#3b82f6', '#fbbf24', '#10b981'] });
+  confetti({ particleCount: 180, spread: 100, origin: { y: 0.55 }, colors: ['#059669', '#047857', '#f97316', '#d1fae5'] });
 }
 
 type TabId = 'todas' | 'ONBOARDING' | 'SEMANAL' | 'ESPECIAL' | 'parceiros';

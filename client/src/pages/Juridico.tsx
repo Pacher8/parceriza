@@ -171,8 +171,8 @@ function ProcessoCard({ p, autenticado }: { p: Processo; autenticado: boolean })
             {expanded ? 'Fechar' : 'Detalhes'}
           </button>
           {autenticado && !resumo && (
-            <button className="btn btn-outline btn-sm" onClick={gerarResumo} disabled={loadingResumo} type="button">
-              {loadingResumo ? 'Resumindo…' : 'Resumir com IA'}
+            <button className="btn btn-accent btn-sm" onClick={gerarResumo} disabled={loadingResumo} type="button">
+              {loadingResumo ? 'Resumindo…' : '✦ Resumir com IA'}
             </button>
           )}
         </div>
@@ -707,7 +707,7 @@ function EspecialistasTab() {
             {AREAS.map((a) => <option key={a} value={a}>{a || 'Todas as áreas'}</option>)}
           </select>
         </div>
-        <button className="btn btn-primary btn-sm" onClick={() => setCriando(true)} type="button">+ Criar meu agente especialista</button>
+        <button className="btn btn-accent btn-sm" onClick={() => setCriando(true)} type="button">+ Criar meu agente especialista</button>
       </div>
 
       {loading && <div className="loading">Carregando especialistas…</div>}
@@ -728,7 +728,7 @@ function EspecialistasTab() {
                 <span className="preco-badge">{e.precoTokens === 0 ? 'Grátis' : `${e.precoTokens} tokens`}</span>
               </div>
               <div style={{ fontSize: '.72rem', color: 'var(--color-gray-400)' }}>{e.totalUsos} consulta{e.totalUsos !== 1 ? 's' : ''}</div>
-              <button className="btn btn-primary btn-sm" onClick={() => setConsultando(e)} type="button">Consultar</button>
+              <button className="btn btn-accent btn-sm" onClick={() => setConsultando(e)} type="button">Consultar agente</button>
             </div>
           ))}
         </div>

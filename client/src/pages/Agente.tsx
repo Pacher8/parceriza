@@ -388,7 +388,7 @@ function ChatTab() {
           />
           <button
             type="submit"
-            className="btn btn-primary"
+            className="btn btn-accent"
             disabled={enviando || !texto.trim()}
             style={{ alignSelf: 'flex-end' }}
           >

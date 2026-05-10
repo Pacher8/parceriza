@@ -43,10 +43,10 @@ export function Home() {
           Tudo que um escritório moderno precisa — em um só lugar.
         </p>
         <div className="hero-ctas">
-          <Link to="/register" className="btn btn-white" style={{ padding: '.75rem 2rem', fontSize: '1rem' }}>
+          <Link to="/register" className="btn btn-primary" style={{ padding: '.85rem 2rem', fontSize: '1rem' }}>
             Quero ser Parceiro →
           </Link>
-          <Link to="/jobs" className="btn btn-outline-white" style={{ padding: '.75rem 2rem', fontSize: '1rem' }}>
+          <Link to="/jobs" className="btn btn-accent" style={{ padding: '.85rem 2rem', fontSize: '1rem' }}>
             Ver JOBs disponíveis
           </Link>
         </div>
@@ -145,10 +145,10 @@ export function Home() {
       )}
 
       {/* CTA Final */}
-      <section style={{ background: 'var(--color-primary)', padding: '4rem 1.25rem', textAlign: 'center' }}>
-        <h2 style={{ color: '#fff', fontSize: '2rem', fontWeight: 800, margin: '0 0 .75rem' }}>Pronto para começar?</h2>
-        <p style={{ color: 'rgba(255,255,255,.8)', fontSize: '1rem', marginBottom: '1.5rem' }}>Junte-se a centenas de advogados que já automatizaram seu escritório com a PARCERIZA.</p>
-        <Link to="/register" className="btn btn-white" style={{ padding: '.75rem 2.5rem', fontSize: '1rem' }}>Criar minha conta grátis →</Link>
+      <section style={{ background: 'var(--color-primary-dark)', padding: '5rem 1.25rem', textAlign: 'center' }}>
+        <h2 style={{ color: '#fff', fontSize: '2rem', fontWeight: 700, margin: '0 0 .75rem', letterSpacing: '-0.02em' }}>Pronto para começar?</h2>
+        <p style={{ color: 'rgba(255,255,255,.8)', fontSize: '1rem', marginBottom: '1.75rem' }}>Junte-se a centenas de advogados que já automatizaram seu escritório com a PARCERIZA.</p>
+        <Link to="/register" className="btn btn-white" style={{ padding: '.85rem 2.5rem', fontSize: '1rem' }}>Criar minha conta grátis →</Link>
       </section>
 
       {/* Footer */}

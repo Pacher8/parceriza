@@ -129,7 +129,7 @@ export function JobDetail() {
                 ({job.ofertas.length})
               </span>
             </h2>
-            <Link to="#" className="btn btn-primary btn-sm">Quero me habilitar</Link>
+            <Link to="#" className="btn btn-accent btn-sm">Quero me habilitar</Link>
           </div>
 
           {job.ofertas.length === 0 ? (
