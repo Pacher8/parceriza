@@ -154,13 +154,13 @@ export function Home() {
       {/* Footer */}
       <footer className="home-footer">
         <div>
-          <Link to="/">PARCERIZA</Link>
+          <Link to="/">Parcer<span style={{ color: '#f97316' }}>I</span>z<span style={{ color: '#f97316' }}>A</span></Link>
           <Link to="/jobs">Marketplace</Link>
           <Link to="/juridico">Jurídico</Link>
           <Link to="/conquistas">Conquistas</Link>
           <Link to="/tokens">Tokens</Link>
         </div>
-        <p>© {new Date().getFullYear()} PARCERIZA — Plataforma Jurídica Digital. Todos os direitos reservados.</p>
+        <p>© {new Date().getFullYear()} Parcer<span style={{ color: '#f97316' }}>I</span>z<span style={{ color: '#f97316' }}>A</span> — Plataforma Jurídica Digital. Todos os direitos reservados.</p>
       </footer>
     </div>
   );

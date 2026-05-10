@@ -35,7 +35,7 @@ export function NavBar({ onLogout, refreshKey = 0 }: NavBarProps) {
   return (
     <>
       <nav className="nav">
-        <Link to="/" className="nav-brand">PARCERIZA</Link>
+        <Link to="/" className="nav-brand">Parcer<span style={{ color: '#f97316' }}>I</span>z<span style={{ color: '#f97316' }}>A</span></Link>
 
         <div className="nav-links">{navLinks}</div>
 
